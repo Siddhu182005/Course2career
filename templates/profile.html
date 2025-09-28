@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #FFFFFF; --container-bg-color: #F9FAFB; --border-color: #E5E7EB;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
+            --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--container-bg-color); color: var(--text-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        header { background-color: var(--background-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav { display: flex; align-items: center; gap: 1.5rem; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s ease; }
+        nav a:hover { color: var(--primary-color); }
+        .main-content { display: flex; justify-content: center; align-items: flex-start; padding: 3rem 0; }
+        .profile-container { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: var(--radius); width: 100%; max-width: 500px; }
+        .profile-container h1 { font-weight: 700; font-size: 1.8rem; margin: 0 0 2rem 0; text-align: center; }
+        .profile-form .form-group { margin-bottom: 1.5rem; }
+        .profile-form label { display: block; font-weight: 500; color: var(--text-secondary-color); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .profile-form input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; box-sizing: border-box; background-color: var(--background-color); color: var(--text-color); }
+        .avatar-selector h3 { font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: var(--text-secondary-color); margin-bottom: 1rem; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; }
+        .avatar-grid img { width: 100%; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
+        .avatar-grid img.selected { border-color: var(--primary-color); }
+        .save-btn { width: 100%; padding: 0.85rem; background-color: var(--primary-color); color: #fff; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+        .message { text-align: center; margin-top: 1.5rem; font-weight: 500; min-height: 1.2em; }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="/" class="header-logo">Course2Career</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-container" id="profile-container">
+                <h1>Edit Profile</h1>
+                <div id="loader" style="text-align: center; padding: 2rem 0;">Loading profile...</div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Course2Career. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) { window.location.href = '/login'; return; }
+
+            const navLinks = document.getElementById('nav-links');
+            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/saved-courses">Saved Courses</a><a href="#" id="logout-link">Logout</a>`;
+            document.getElementById('logout-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = '/login';
+            });
+
+            const profileContainer = document.getElementById('profile-container');
+            let selectedAvatarUrl = '';
+            const avatars = ['/static/avatars/1.png', '/static/avatars/2.png', '/static/avatars/3.png', '/static/avatars/4.png', '/static/avatars/5.png', '/static/avatars/6.png'];
+            
+            try {
+                const response = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) { throw new Error('Could not load profile.'); }
+                const user = await response.json();
+                selectedAvatarUrl = user.avatar_url;
+
+                let avatarHtml = avatars.map(avatar => {
+                    const isSelected = avatar === user.avatar_url ? 'selected' : '';
+                    return `<img src="${avatar}" alt="Avatar" class="${isSelected}" data-url="${avatar}">`;
+                }).join('');
+
+                profileContainer.innerHTML = `
+                    <h1>Edit Profile</h1>
+                    <form id="profile-form" class="profile-form">
+                        <div class="avatar-selector">
+                            <h3>Choose Your Avatar</h3>
+                            <div class="avatar-grid">${avatarHtml}</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" id="full_name" value="${user.full_name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" value="${user.email}" required>
+                        </div>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                        <div id="message-container" class="message"></div>
+                    </form>`;
+                attachEventListeners();
+            } catch (error) {
+                profileContainer.innerHTML = `<p class="error" style="text-align:center;">${error.message}</p>`;
+            }
+
+            function attachEventListeners() {
+                const avatarImages = document.querySelectorAll('.avatar-grid img');
+                avatarImages.forEach(img => {
+                    img.addEventListener('click', () => {
+                        avatarImages.forEach(i => i.classList.remove('selected'));
+                        img.classList.add('selected');
+                        selectedAvatarUrl = img.dataset.url;
+                    });
+                });
+                const profileForm = document.getElementById('profile-form');
+                profileForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const messageContainer = document.getElementById('message-container');
+                    messageContainer.textContent = '';
+                    const fullName = document.getElementById('full_name').value;
+                    const email = document.getElementById('email').value;
+                    try {
+                        const res = await fetch('/api/profile', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                            body: JSON.stringify({ fullName, email, avatarUrl: selectedAvatarUrl })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) { throw new Error(data.message); }
+                        messageContainer.textContent = data.message;
+                        messageContainer.className = 'message success';
+                    } catch (err) {
+                        messageContainer.textContent = err.message || 'Could not update profile.';
+                        messageContainer.className = 'message error';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

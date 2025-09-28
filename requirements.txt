@@ -1,0 +1,9 @@
+flask
+flask-bcrypt
+python-dotenv
+pyjwt
+requests
+beautifulsoup4
+google-generativeai
+sqlitecloud
+gunicorn
