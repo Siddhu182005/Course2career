@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details - Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+    <style>
+        :root {
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #F9FAFB; --container-bg-color: #FFFFFF; --border-color: #E5E7EB;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
+            --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--background-color); color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; }
+        header { background-color: var(--container-bg-color); backdrop-filter: blur(10px);
+            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+        }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        nav a:hover { color: var(--primary-color); }
+        main { max-width: 900px; margin: 2rem auto; padding: 2rem; background-color: var(--container-bg-color);
+            border-radius: var(--radius); border: 1px solid var(--border-color); }
+        h1 { font-weight: 600; margin-top: 0; }
+        p { color: var(--text-secondary-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="header-logo">Course2Career</a>
+        <nav id="nav-links"></nav>
+    </header>
+    <main>
+        <h1>Course Details</h1>
+        <p>This page will show detailed information about a selected course.</p>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            // CHANGE: Redirect updated to /login route
+            if (!token) { window.location.href = '/login'; return; }
+            const navLinks = document.getElementById('nav-links');
+            // CHANGE: All links updated to routes
+            navLinks.innerHTML = `
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">Profile</a>
+                <a href="#" id="logout-btn">Logout</a>
+            `;
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                // CHANGE: Redirect updated to /login route
+                window.location.href = '/login';
+            });
+        });
+    </script>
+</body>
+</html>

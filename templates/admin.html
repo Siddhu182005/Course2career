@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+    <style>
+        :root {
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #F9FAFB; --container-bg-color: #FFFFFF; --border-color: #E5E7EB;
+            --danger-color: #EF4444; --danger-hover-color: #DC2626;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
+            --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--background-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+        header { background-color: var(--container-bg-color); backdrop-filter: blur(10px);
+            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+        }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        nav a:hover { color: var(--primary-color); }
+        main { max-width: 1200px; margin: 2rem auto; padding: 2rem; background-color: var(--container-bg-color);
+            border-radius: var(--radius); border: 1px solid var(--border-color); }
+        h1 { font-weight: 600; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; color: var(--text-secondary-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .delete-btn { background-color: var(--danger-color); color: white; border: none; padding: 0.4rem 0.8rem;
+            border-radius: var(--radius); font-size: 0.8rem; cursor: pointer; transition: background-color 0.2s; }
+        .delete-btn:hover { background-color: var(--danger-hover-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="header-logo">Course2Career</a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/templates/login.html" id="logout-btn">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <h1>User Management</h1>
+        <div id="user-table-container">
+            <p>Loading users...</p>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('authToken');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!token || userRole !== 'admin') {
+                window.location.href = '/login';
+                return;
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userRole');
+                window.location.href = '/login';
+            });
+
+            const userTableContainer = document.getElementById('user-table-container');
+
+            async function fetchUsers() {
+                try {
+                    const response = await fetch('/api/users', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch users.');
+                    }
+                    const users = await response.json();
+                    renderTable(users);
+                } catch (error) {
+                    userTableContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+                }
+            }
+
+            function renderTable(users) {
+                if (users.length === 0) {
+                    userTableContainer.innerHTML = '<p>No users found.</p>';
+                    return;
+                }
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined On</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${users.map(user => `
+                        <tr data-user-id="${user.id}">
+                            <td>${user.id}</td>
+                            <td>${user.full_name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.role}</td>
+                            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                    </tbody>
+                `;
+                userTableContainer.innerHTML = '';
+                userTableContainer.appendChild(table);
+            }
+
+            window.deleteUser = async (userId) => {
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    return;
+                }
+                try {
+                    const response = await fetch(`/api/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.message);
+                        fetchUsers();
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+            
+            fetchUsers();
+        });
+    </script>
+</body>
+</html>

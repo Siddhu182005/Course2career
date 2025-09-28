@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #F9FAFB; --container-bg-color: #FFFFFF; --border-color: #E5E7EB;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --accent-color: #FBBF24; --accent-hover-color: #F59E0B;
+            --text-color: #E5E7EB; --text-secondary-color: #9CA3AF; --background-color: #111827;
+            --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--background-color); color: var(--text-color); }
+        header { background-color: var(--container-bg-color); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        nav a:hover { color: var(--primary-color); }
+        main { text-align: center; padding: 5rem 2rem; }
+        h1 { font-size: 3rem; font-weight: 700; }
+        p { font-size: 1.25rem; color: var(--text-secondary-color); max-width: 600px; margin: 1rem auto; }
+        .cta-button { display: inline-block; margin-top: 2rem; background-color: var(--primary-color); color: white; padding: 0.8rem 2rem; border-radius: var(--radius); text-decoration: none; font-weight: 600; }
+        
+        .features-section { padding: 4rem 2rem; background-color: var(--background-color); text-align: center; }
+        .features-section h2 { font-size: 2.5rem; font-weight: 700; margin-top: 0; margin-bottom: 3rem; }
+        .features-container { display: flex; justify-content: center; gap: 2rem; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+        .feature-card { background-color: var(--container-bg-color); padding: 2.5rem 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); flex: 1; min-width: 280px; box-shadow: var(--shadow); }
+        .feature-card h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 1rem; color: var(--text-color); }
+        .feature-icon { width: 48px; height: 48px; color: var(--primary-color); margin-bottom: 1.5rem; }
+        
+        .how-it-works-section { padding: 6rem 2rem; background-color: var(--container-bg-color); text-align: center; }
+        .how-it-works-section h2 { font-size: 2.8rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-color); }
+        .how-it-works-section .subtitle { font-size: 1.15rem; color: var(--text-secondary-color); max-width: 800px; margin: 0 auto 4rem auto; line-height: 1.6; }
+        .steps-container { display: flex; flex-direction: column; gap: 4rem; max-width: 1200px; margin: 0 auto; }
+        .step-row { display: flex; align-items: center; gap: 3rem; }
+        .step-row:nth-child(even) { flex-direction: row-reverse; }
+        .step-content { flex: 1; text-align: left; padding: 1rem; }
+        .step-content .step-pre-title { text-transform: uppercase; color: var(--primary-color); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .step-content h3 { font-size: 1.8rem; font-weight: 600; color: var(--text-color); margin-top: 0; margin-bottom: 0.8rem; }
+        .step-content p { font-size: 1rem; color: var(--text-secondary-color); line-height: 1.6; margin: 0; max-width: none; }
+        .step-illustration { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .step-illustration img { max-width: 100%; height: auto; display: block; border-radius: var(--radius); box-shadow: var(--shadow); animation: float 4s ease-in-out infinite; }
+        .step-button { display: inline-block; margin-top: 1.5rem; background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius); text-decoration: none; font-weight: 600; transition: background-color 0.3s ease; }
+        
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        .step-row:nth-child(even) .step-illustration img { animation-delay: 1s; }
+        
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); background-color: var(--background-color); border-top: 1px solid var(--border-color); }
+        
+        @media (max-width: 900px) {
+            .step-row, .step-row:nth-child(even) { flex-direction: column; }
+            .step-content { text-align: center; }
+            .step-illustration { width: 100%; max-width: 400px; margin-top: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="header-logo">Course2Career</a>
+        <nav id="nav-links"></nav>
+    </header>
+
+    <main>
+        <h1>Welcome to Course2Career</h1>
+        <p>Your personalized journey from learning to earning starts here. Discover AI-powered course roadmaps tailored to your career goals.</p>
+        <a href="/signup" id="main-cta-button" class="cta-button">Get Started</a>
+    </main>
+    
+    <section class="features-section">
+        <h2>Why Choose Course2Career?</h2>
+        <div class="features-container">
+            <div class="feature-card">
+                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 21.75l-.648-1.188a2.25 2.25 0 01-1.47-1.47L12.964 18l1.188-.648a2.25 2.25 0 011.47-1.47L16.25 15l.648 1.188a2.25 2.25 0 011.47 1.47L19.536 18l-1.188.648a2.25 2.25 0 01-1.47 1.47z" />
+                </svg>
+                <h3>AI-Powered Roadmaps</h3>
+                <p>Get instant, personalized learning paths for any career goal, generated by advanced AI.</p>
+            </div>
+            <div class="feature-card">
+                 <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.5 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                </svg>
+                <h3>Save Your Courses</h3>
+                <p>Keep track of your generated learning paths by saving them directly to your personal profile.</p>
+            </div>
+            <div class="feature-card">
+                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3>Simple & Fast</h3>
+                <p>No complicated sign-ups or fees. Just describe your goal and get a complete plan in seconds.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works-section">
+        <h2>How It Works</h2>
+        <p class="subtitle">The quickest and most affordable way to start a career. Simply start a free introduction course to begin your journey on a new career path. No experience or degree required!</p>
+        <div class="steps-container">
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-pre-title">Where do I start?</div>
+                    <h3>Try the free course</h3>
+                    <p>Sign up and start one of our free introduction courses. You will learn all about what the career entails, the current job market, how to break it, and whether you would be a good fit.</p>
+                    <a href="/signup" class="step-button">Start for free →</a>
+                </div>
+                <div class="step-illustration">
+                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80" alt="Person starting an online course" loading="lazy">
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-pre-title">Where do I go next?</div>
+                    <h3>Learn new skills</h3>
+                    <p>Once you've decided on a career path, it's time to join our community! Enroll in one of our online self-paced courses to begin learning, with access to affordable support from coaches working in the industry.</p>
+                    <a href="/dashboard" class="step-button">Explore Courses →</a>
+                </div>
+                <div class="step-illustration">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80" alt="Student searching and learning on a laptop" loading="lazy">
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-content">
+                    <div class="step-pre-title">Where do I end up?</div>
+                    <h3>Start your career</h3>
+                    <p>We teach you exactly how to land an entry-level position, giving you insider knowledge to help you set up your resume, apply to companies the right way, and prepare for interviews like a pro.</p>
+                    <a href="/profile" class="step-button">Get Started →</a>
+                </div>
+                <div class="step-illustration">
+                    <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80" alt="Professional starting a new career" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Course2Career. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.getElementById('nav-links');
+            const ctaButton = document.getElementById('main-cta-button');
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                navLinks.innerHTML = `
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/profile">Profile</a>
+                    <a href="#" id="logout-btn">Logout</a>
+                `;
+                ctaButton.textContent = 'Go to Your Dashboard';
+                ctaButton.href = '/dashboard';
+                document.getElementById('logout-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.clear();
+                    window.location.href = '/login';
+                });
+            } else {
+                navLinks.innerHTML = `
+                    <a href="/login">Login</a>
+                    <a href="/signup">Sign Up</a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

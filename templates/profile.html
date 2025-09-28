@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #FFFFFF; --container-bg-color: #F9FAFB; --border-color: #E5E7EB;
+            --danger-color: #EF4444; --danger-hover-color: #DC2626;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
+            --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--container-bg-color); color: var(--text-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        header { background-color: var(--background-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav { display: flex; align-items: center; gap: 1.5rem; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s ease; }
+        nav a:hover { color: var(--primary-color); }
+        main { padding: 3rem 0; }
+        .settings-container { max-width: 700px; margin: 0 auto; }
+        .settings-section { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: var(--radius); margin-bottom: 2rem; }
+        .settings-section h2 { font-weight: 700; font-size: 1.5rem; margin: 0 0 2rem 0; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 500; color: var(--text-secondary-color); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; box-sizing: border-box; background-color: var(--background-color); color: var(--text-color); }
+        .avatar-selector h3 { font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: var(--text-secondary-color); margin-bottom: 1rem; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .avatar-grid img { width: 100%; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
+        .avatar-grid img.selected { border-color: var(--primary-color); }
+        .action-button { width: auto; min-width: 120px; padding: 0.8rem 1.5rem; background-color: var(--primary-color); color: #fff; border: none; border-radius: var(--radius); font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+        .danger-zone h2 { color: var(--danger-color); }
+        .danger-zone .delete-btn { background-color: var(--danger-color); }
+        .danger-zone .delete-btn:hover { background-color: var(--danger-hover-color); }
+        .message { text-align: left; margin-top: 1.5rem; font-weight: 500; min-height: 1.2em; }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="/" class="header-logo">Course2Career</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+    <main>
+        <div class="container settings-container">
+            <div id="profile-section" class="settings-section">
+                <h2>Edit Profile</h2>
+                <div id="profile-loader" style="text-align: center; padding: 2rem 0;">Loading profile...</div>
+            </div>
+
+            <div id="password-section" class="settings-section">
+                <h2>Change Password</h2>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" required>
+                    </div>
+                    <button type="submit" class="action-button">Update Password</button>
+                    <div id="password-message" class="message"></div>
+                </form>
+            </div>
+
+            <div id="danger-zone" class="settings-section danger-zone">
+                <h2>Danger Zone</h2>
+                <p style="color: var(--text-secondary-color); margin-bottom: 1.5rem;">Once you delete your account, there is no going back. Please be certain.</p>
+                <button id="delete-account-btn" class="action-button delete-btn">Delete Your Account</button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Course2Career. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) { window.location.href = '/login'; return; }
+
+            const navLinks = document.getElementById('nav-links');
+            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/saved-courses">Saved Courses</a><a href="#" id="logout-btn">Logout</a>`;
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = '/login';
+            });
+
+            const profileSection = document.getElementById('profile-section');
+            let selectedAvatarUrl = '';
+            const avatars = ['/static/avatars/1.png', '/static/avatars/2.png', '/static/avatars/3.png', '/static/avatars/4.png', '/static/avatars/5.png', '/static/avatars/6.png'];
+
+            try {
+                const response = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) { throw new Error('Could not load profile.'); }
+                const user = await response.json();
+                selectedAvatarUrl = user.avatar_url;
+                
+                const avatarHtml = avatars.map(avatar => `<img src="${avatar}" alt="Avatar" class="${avatar === user.avatar_url ? 'selected' : ''}" data-url="${avatar}">`).join('');
+                
+                profileSection.innerHTML = `
+                    <h2>Edit Profile</h2>
+                    <form id="profile-form">
+                        <div class="avatar-selector">
+                            <h3>Choose Your Avatar</h3>
+                            <div class="avatar-grid">${avatarHtml}</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" id="full_name" value="${user.full_name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" value="${user.email}" required>
+                        </div>
+                        <button type="submit" class="action-button">Save Changes</button>
+                        <div id="profile-message" class="message"></div>
+                    </form>`;
+                attachProfileListeners();
+            } catch (error) {
+                profileSection.innerHTML = `<p class="error">${error.message}</p>`;
+            }
+
+            function attachProfileListeners() {
+                document.querySelectorAll('.avatar-grid img').forEach(img => {
+                    img.addEventListener('click', () => {
+                        document.querySelectorAll('.avatar-grid img').forEach(i => i.classList.remove('selected'));
+                        img.classList.add('selected');
+                        selectedAvatarUrl = img.dataset.url;
+                    });
+                });
+                document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const msg = document.getElementById('profile-message');
+                    try {
+                        const res = await fetch('/api/profile', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                            body: JSON.stringify({ fullName: document.getElementById('full_name').value, email: document.getElementById('email').value, avatarUrl: selectedAvatarUrl })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) { throw new Error(data.message); }
+                        msg.textContent = data.message;
+                        msg.className = 'message success';
+                    } catch (err) {
+                        msg.textContent = err.message || 'Could not update profile.';
+                        msg.className = 'message error';
+                    }
+                });
+            }
+
+            document.getElementById('password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const msg = document.getElementById('password-message');
+                const currentPassword = document.getElementById('current_password').value;
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+
+                if (newPassword !== confirmPassword) {
+                    msg.textContent = 'New passwords do not match.';
+                    msg.className = 'message error';
+                    return;
+                }
+                
+                try {
+                    const res = await fetch('/api/profile/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                        body: JSON.stringify({ currentPassword, newPassword })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) { throw new Error(data.message); }
+                    msg.textContent = data.message;
+                    msg.className = 'message success';
+                    e.target.reset();
+                } catch (err) {
+                    msg.textContent = err.message || 'Could not update password.';
+                    msg.className = 'message error';
+                }
+            });
+
+            document.getElementById('delete-account-btn').addEventListener('click', async () => {
+                if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/profile/delete', {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}`}
+                    });
+                    if (!res.ok) { throw new Error((await res.json()).message); }
+                    alert('Your account has been successfully deleted.');
+                    localStorage.clear();
+                    window.location.href = '/';
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

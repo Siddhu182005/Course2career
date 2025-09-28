@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Course2Career</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+    <style>
+        :root {
+            --primary-color: #3B82F6; --accent-color: #F59E0B; --accent-hover-color: #D97706;
+            --text-color: #111827; --text-secondary-color: #6B7280; --background-color: #F9FAFB;
+            --container-bg-color: #FFFFFF; --border-color: #E5E7EB; --heading-font: 'Inter', sans-serif;
+            --body-font: 'Inter', sans-serif; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); --radius: 0.5rem;
+        }
+        html.dark-mode {
+            --primary-color: #60A5FA; --accent-color: #FBBF24; --accent-hover-color: #F59E0B;
+            --text-color: #E5E7EB; --text-secondary-color: #9CA3AF; --background-color: #111827;
+            --container-bg-color: #1F2937; --border-color: #374151;
+        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--background-color); color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; }
+        header { background-color: var(--container-bg-color); backdrop-filter: blur(10px);
+            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10;
+        }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        nav a:hover { color: var(--primary-color); }
+        main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .dashboard-section { background-color: var(--container-bg-color); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem;
+            border: 1px solid var(--border-color); }
+        h1, h2 { font-weight: 600; margin-top: 0; }
+        p { color: var(--text-secondary-color); }
+        #ai-course-form { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        #ai-course-query { flex-grow: 1; background-color: var(--background-color); border: 1px solid var(--border-color); border-radius: var(--radius);
+            padding: 0.75rem 1rem; font-size: 1rem; color: var(--text-color); }
+        #ai-course-form button { background-color: var(--primary-color);
+            color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: background-color 0.3s;
+        }
+        #ai-course-form button:hover { background-color: #2563EB; }
+        .ai-course-card { background: var(--container-bg-color); border: 1px solid var(--border-color); border-radius: 1rem; margin-top: 2rem;
+            overflow: hidden; display: flex; opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .card-image { flex: 0 0 250px; background-color: var(--border-color); }
+        .card-content { padding: 1.5rem; flex-grow: 1; }
+        .card-content h3 { margin: 0 0 0.5rem 0; font-size: 1.75rem; font-weight: 700; color: var(--primary-color); }
+        .card-content .description { font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary-color); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .stat-item strong { display: block; font-size: 0.8rem; color: var(--text-secondary-color); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+        .stat-item span { font-size: 1.1rem; font-weight: 600; color: var(--text-color); }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; margin: 0.5rem 0 0 0; }
+        .skill-tag { background-color: var(--border-color); color: var(--text-secondary-color); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 500; }
+        .card-actions { margin-top: 1.5rem; }
+        .card-actions button { background-color: var(--accent-color); color: #fff; border: none; padding: 0.6rem 1.2rem;
+            border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: background-color 0.3s; }
+        .card-actions button:hover { background-color: var(--accent-hover-color); }
+        .card-actions button:disabled { background-color: #525a66; color: #cdd1d6; cursor: not-allowed; }
+        @media (max-width: 768px) { .ai-course-card { flex-direction: column; } .card-image { max-height: 200px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="/" class="header-logo">Course2Career</a>
+            <nav id="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/saved-courses">Saved Courses</a>
+                <a href="/profile">Profile</a>
+                <a href="#" id="logout-btn">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="dashboard-section">
+            <h1>AI Course Generator</h1>
+            <p>Describe any skill or career goal, and let our AI craft the perfect learning path for you.</p>
+            <form id="ai-course-form">
+                <input type="text" id="ai-course-query" placeholder="e.g., 'Become a full-stack developer with React'" required>
+                <button type="submit">✨ Generate</button>
+            </form>
+            <div id="ai-course-result-container"></div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            document.getElementById('logout-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userRole');
+                window.location.href = '/login';
+            });
+            
+            document.getElementById('ai-course-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const query = document.getElementById('ai-course-query').value;
+                const resultContainer = document.getElementById('ai-course-result-container');
+                resultContainer.innerHTML = `<p style="text-align: center; padding: 2rem 0;">Generating your course with Gemini AI...</p>`;
+                try {
+                    const response = await fetch('/api/generate-course', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ query })
+                    });
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || errorData.message || 'API Error');
+                    }
+                    const courseData = await response.json();
+                    const imageUrl = `https://source.unsplash.com/600x400/?${encodeURIComponent(courseData.imageQuery)},technology,programming`;
+                    const skillsHtml = Array.isArray(courseData.skills) ? courseData.skills.map(skill => `<li class="skill-tag">${skill}</li>`).join('') : '';
+                    resultContainer.innerHTML = `
+                        <div class="ai-course-card">
+                            <div class="card-image"><img src="${imageUrl}" alt="${courseData.imageQuery}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/374151/E5E7EB?text=Image';"></div>
+                            <div class="card-content">
+                                <h3>${courseData.title}</h3>
+                                <p>${courseData.description}</p>
+                                <div class="stats-grid">
+                                    <div class="stat-item"><strong>Salary EST.</strong><span>${courseData.startingSalary}</span></div>
+                                    <div class="stat-item"><strong>Duration</strong><span>${courseData.duration}</span></div>
+                                    <div class="stat-item"><strong>Difficulty</strong><span>${courseData.difficulty}</span></div>
+                                </div>
+                                <div class="stat-item"><strong>Skills Covered</strong><ul class="skills-list">${skillsHtml}</ul></div>
+                                <div class="card-actions">
+                                    <button id="save-course-btn">💾 Save Course</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    const saveBtn = document.getElementById('save-course-btn');
+                    saveBtn.addEventListener('click', async () => {
+                        try {
+                            const saveResponse = await fetch('/api/save-course', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                body: JSON.stringify(courseData)
+                            });
+                            if (!saveResponse.ok) throw new Error('Failed to save.');
+                            saveBtn.textContent = '✓ Saved!';
+                            saveBtn.disabled = true;
+                        } catch (err) {
+                            saveBtn.textContent = 'Error Saving';
+                        }
+                    });
+                } catch (error) {
+                    resultContainer.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Error: ${error.message}</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
