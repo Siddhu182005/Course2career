@@ -5,80 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved Courses - Course2Career</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('dark-mode');
-        }
-    </script>
     <style>
         :root {
             --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
-            --background-color: #F9FAFB; --container-bg-color: #FFFFFF; --border-color: #E5E7EB;
+            --background-color: #FFFFFF; --container-bg-color: #F9FAFB; --border-color: #E5E7EB;
             --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
         }
         html.dark-mode {
             --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
             --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
         }
-        body { font-family: var(--body-font); margin: 0; background-color: var(--background-color); color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s; }
-        header { background-color: var(--container-bg-color); backdrop-filter: blur(10px);
-            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10;
-        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--container-bg-color); color: var(--text-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        header { background-color: var(--background-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
         .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
-        nav a { color: var(--text-secondary-color); text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        nav { display: flex; align-items: center; gap: 1.5rem; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s ease; }
         nav a:hover { color: var(--primary-color); }
-        main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-        .saved-courses-section { background-color: var(--container-bg-color); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); }
-        h1 { font-weight: 600; margin-top: 0; margin-bottom: 2rem; }
-        #courses-list { list-style: none; padding: 0; }
-        .course-item { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border-color); }
+        main { padding: 3rem 0; }
+        .content-section { background-color: var(--background-color); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        h1 { font-size: 2.5rem; font-weight: 700; margin: 0 0 2rem 0; }
+        #courses-list { list-style: none; padding: 0; margin: 0; }
+        .course-item { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid var(--border-color); }
         .course-item:last-child { border-bottom: none; }
         .course-title { font-weight: 600; font-size: 1.1rem; color: var(--text-color); }
         .course-date { font-size: 0.9rem; color: var(--text-secondary-color); }
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
     <header>
-        <a href="/" class="header-logo">Course2Career</a>
-        <nav>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/profile">Profile</a>
-            <a href="#" id="logout-link">Logout</a>
-        </nav>
+        <div class="container header-content">
+            <a href="/" class="header-logo">Course2Career</a>
+            <nav id="nav-links"></nav>
+        </div>
     </header>
     <main>
-        <div class="saved-courses-section">
-            <h1>My Saved Courses</h1>
-            <div id="loader" style="text-align: center; padding: 2rem 0;">Loading courses...</div>
-            <ul id="courses-list"></ul>
+        <div class="container">
+            <div class="content-section">
+                <h1>My Saved Courses</h1>
+                <div id="loader" style="text-align: center; padding: 2rem 0;">Loading courses...</div>
+                <ul id="courses-list"></ul>
+            </div>
         </div>
     </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Course2Career. All Rights Reserved.</p>
+        </div>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('authToken');
-            if (!token) {
-                // CHANGE: Redirect updated to /login route
-                window.location.href = '/login';
-                return;
-            }
+            if (!token) { window.location.href = '/login'; return; }
+
+            const navLinks = document.getElementById('nav-links');
+            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/profile">Profile</a><a href="#" id="logout-link">Logout</a>`;
             document.getElementById('logout-link').addEventListener('click', (e) => {
                 e.preventDefault();
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userId');
-                // CHANGE: Redirect updated to /login route
+                localStorage.clear();
                 window.location.href = '/login';
             });
+
             const coursesList = document.getElementById('courses-list');
             const loader = document.getElementById('loader');
             try {
                 const response = await fetch('/api/saved-courses', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) {
-                    throw new Error('Could not fetch saved courses.');
-                }
+                if (!response.ok) { throw new Error('Could not fetch saved courses.'); }
                 const courses = await response.json();
                 loader.style.display = 'none';
                 if (courses.length === 0) {

@@ -90,8 +90,15 @@ def signup(c):
     try:
         c.execute(insert_query, (full_name, email, hashed_password))
         new_user_id = c.lastrowid
-        new_user_object = { "id": new_user_id, "full_name": full_name, "email": email }
-        return jsonify({ "message": "Account created successfully!", "user": new_user_object }), 201
+        new_user_object = {
+            "id": new_user_id,
+            "full_name": full_name,
+            "email": email
+        }
+        return jsonify({
+            "message": "Account created successfully!",
+            "user": new_user_object
+        }), 201
     except sq.IntegrityError:
         return jsonify({"message": "User with this email already exists."}), 400
     except Exception as e:
@@ -112,11 +119,75 @@ def login(c):
         return jsonify({"message": "User with this email not found."}), 404
 
     if bcrypt.check_password_hash(user['password'], password):
-        payload = { 'userId': user['id'], 'email': user['email'], 'role': user['role'], 'exp': datetime.utcnow() + timedelta(hours=1) }
+        payload = {
+            'userId': user['id'],
+            'email': user['email'],
+            'role': user['role'],
+            'exp': datetime.utcnow() + timedelta(hours=1)
+        }
         token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
-        return jsonify({ "message": "Login successful!", "token": token, "userId": user['id'], "role": user['role'] })
+        return jsonify({
+            "message": "Login successful!",
+            "token": token,
+            "userId": user['id'],
+            "role": user['role']
+        })
     else:
         return jsonify({"message": "Invalid password."}), 401
+
+@app.route('/login/github')
+def github_login():
+    if not GITHUB_CLIENT_ID:
+        return "GitHub login is not configured.", 500
+    github_auth_url = f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&scope=user:email"
+    return redirect(github_auth_url)
+
+@app.route('/login/github/authorized')
+@sqldb
+def github_authorized(c):
+    code = request.args.get('code')
+    if not code:
+        return "Error: No authorization code provided from GitHub.", 400
+
+    token_url = 'https://github.com/login/oauth/access_token'
+    token_params = {'client_id': GITHUB_CLIENT_ID, 'client_secret': GITHUB_CLIENT_SECRET, 'code': code}
+    headers = {'Accept': 'application/json'}
+    token_res = requests.post(token_url, params=token_params, headers=headers)
+    token_json = token_res.json()
+    access_token = token_json.get('access_token')
+
+    if not access_token:
+        return "Error: Could not retrieve access token from GitHub.", 400
+
+    user_api_url = 'https://api.github.com/user'
+    auth_header = {'Authorization': f'token {access_token}'}
+    user_res = requests.get(user_api_url, headers=auth_header)
+    user_json = user_res.json()
+    
+    user_email = user_json.get('email')
+    if not user_email:
+        emails_res = requests.get(f'{user_api_url}/emails', headers=auth_header)
+        emails = emails_res.json()
+        primary_email = next((email['email'] for email in emails if email['primary']), None)
+        user_email = primary_email
+
+    if not user_email:
+        return "Error: Could not retrieve email from GitHub.", 400
+
+    c.execute("SELECT * FROM users WHERE email = ?", (user_email,))
+    user = c.fetchone()
+
+    if not user:
+        user_name = user_json.get('name') or user_json.get('login')
+        placeholder_password = bcrypt.generate_password_hash(os.urandom(16)).decode('utf-8')
+        c.execute("INSERT INTO users(full_name, email, password) VALUES(?, ?, ?)", (user_name, user_email, placeholder_password))
+        c.execute("SELECT * FROM users WHERE email = ?", (user_email,))
+        user = c.fetchone()
+
+    payload = {'userId': user['id'], 'email': user['email'], 'role': user['role'], 'exp': datetime.utcnow() + timedelta(hours=1)}
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
+    
+    return redirect(url_for('github_auth_complete_page', token=token, userId=user['id'], role=user['role']))
 
 @app.route('/api/profile', methods=['GET'])
 @authenticate_token
@@ -155,38 +226,6 @@ def update_profile(c):
     except Exception as e:
         return jsonify({"message": 'Server error while updating profile.'}), 500
 
-@app.route('/api/profile/change-password', methods=['POST'])
-@authenticate_token
-@sqldb
-def change_password(c):
-    user_id = g.user['userId']
-    data = request.get_json()
-    current_password = data.get('currentPassword')
-    new_password = data.get('newPassword')
-
-    c.execute("SELECT password FROM users WHERE id = ?", (user_id,))
-    user = c.fetchone()
-
-    if not user or not bcrypt.check_password_hash(user['password'], current_password):
-        return jsonify({"message": "Current password is incorrect."}), 403
-
-    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-    c.execute("UPDATE users SET password = ? WHERE id = ?", (hashed_password, user_id))
-    
-    return jsonify({"message": "Password updated successfully!"}), 200
-
-@app.route('/api/profile/delete', methods=['DELETE'])
-@authenticate_token
-@sqldb
-def delete_account(c):
-    user_id = g.user['userId']
-    try:
-        c.execute("DELETE FROM saved_courses WHERE user_id = ?", (user_id,))
-        c.execute("DELETE FROM users WHERE id = ?", (user_id,))
-        return jsonify({"message": "Account deleted successfully."}), 200
-    except Exception as e:
-        return jsonify({"message": "Error deleting account."}), 500
-
 @app.route('/api/save-course', methods=['POST'])
 @authenticate_token
 @sqldb
@@ -214,7 +253,7 @@ def get_saved_courses(c):
     except Exception as e:
         return jsonify({"message": "Could not retrieve saved courses."}), 500
 
-@app.route('/api/generate-course', methods=['POST'])
+@app.route('/api/generate-course-with-ai', methods=['POST'])
 @authenticate_token
 def generate_course():
     data = request.get_json()
@@ -234,40 +273,6 @@ def generate_course():
         return jsonify(course_data)
     except Exception as e:
         return jsonify({"error": "Failed to generate course from AI."}), 500
-
-@app.route('/api/generate-career-path', methods=['POST'])
-@authenticate_token
-def generate_career_path():
-    data = request.get_json()
-    user_query = data.get('query')
-    try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        prompt = f"""
-            You are an expert career advisor for a user interested in a career in "{user_query}".
-            Generate a detailed career path flowchart as a clean JSON object.
-            The JSON object must have these exact keys: "title", "description", and "flowchart".
-            The "title" should be a concise career path title.
-            The "description" should be a short, engaging overview of the path.
-            The "flowchart" key must contain a "roles" array and a "connections" array.
-            
-            The "roles" array should contain objects for each job position. Each role object must have:
-            - "id": a unique integer identifier (e.g., 1, 2, 3).
-            - "title": the job title (e.g., "IT Helpdesk Technician").
-            - "stage": the career stage, which must be one of "Entry Level", "Mid Career", or "Late Career".
-            - "salary": a realistic annual salary range in INR (e.g., "₹4L - ₹6L / yr").
-
-            The "connections" array should contain objects defining the links between roles. Each connection object must have:
-            - "from": the integer "id" of the starting role.
-            - "to": the integer "id" of the ending role.
-
-            Generate a path with at least 5 roles and 4 connections. Ensure the connections are logical career progressions.
-            """
-        response = model.generate_content(prompt)
-        cleaned_text = re.sub(r'^```json\s*|```\s*$', '', response.text, flags=re.MULTILINE).strip()
-        career_path_data = json.loads(cleaned_text)
-        return jsonify(career_path_data)
-    except Exception as e:
-        return jsonify({"error": "Failed to generate career path from AI."}), 500
 
 @app.route('/api/users', methods=['GET'])
 @authenticate_admin
@@ -366,4 +371,5 @@ def init_db(c):
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
+

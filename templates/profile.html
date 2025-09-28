@@ -9,8 +9,8 @@
         :root {
             --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
             --background-color: #FFFFFF; --container-bg-color: #F9FAFB; --border-color: #E5E7EB;
-            --danger-color: #EF4444; --danger-hover-color: #DC2626;
             --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
         }
         html.dark-mode {
             --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
@@ -24,22 +24,18 @@
         nav { display: flex; align-items: center; gap: 1.5rem; }
         nav a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s ease; }
         nav a:hover { color: var(--primary-color); }
-        main { padding: 3rem 0; }
-        .settings-container { max-width: 700px; margin: 0 auto; }
-        .settings-section { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: var(--radius); margin-bottom: 2rem; }
-        .settings-section h2 { font-weight: 700; font-size: 1.5rem; margin: 0 0 2rem 0; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; font-weight: 500; color: var(--text-secondary-color); margin-bottom: 0.5rem; font-size: 0.9rem; }
-        input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; box-sizing: border-box; background-color: var(--background-color); color: var(--text-color); }
+        .main-content { display: flex; justify-content: center; align-items: flex-start; padding: 3rem 0; }
+        .profile-container { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: var(--radius); width: 100%; max-width: 500px; }
+        .profile-container h1 { font-weight: 700; font-size: 1.8rem; margin: 0 0 2rem 0; text-align: center; }
+        .profile-form .form-group { margin-bottom: 1.5rem; }
+        .profile-form label { display: block; font-weight: 500; color: var(--text-secondary-color); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .profile-form input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; box-sizing: border-box; background-color: var(--background-color); color: var(--text-color); }
         .avatar-selector h3 { font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: var(--text-secondary-color); margin-bottom: 1rem; }
-        .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; }
         .avatar-grid img { width: 100%; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
         .avatar-grid img.selected { border-color: var(--primary-color); }
-        .action-button { width: auto; min-width: 120px; padding: 0.8rem 1.5rem; background-color: var(--primary-color); color: #fff; border: none; border-radius: var(--radius); font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-        .danger-zone h2 { color: var(--danger-color); }
-        .danger-zone .delete-btn { background-color: var(--danger-color); }
-        .danger-zone .delete-btn:hover { background-color: var(--danger-hover-color); }
-        .message { text-align: left; margin-top: 1.5rem; font-weight: 500; min-height: 1.2em; }
+        .save-btn { width: 100%; padding: 0.85rem; background-color: var(--primary-color); color: #fff; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+        .message { text-align: center; margin-top: 1.5rem; font-weight: 500; min-height: 1.2em; }
         .success { color: #10B981; }
         .error { color: #EF4444; }
         footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
@@ -52,37 +48,11 @@
             <nav id="nav-links"></nav>
         </div>
     </header>
-    <main>
-        <div class="container settings-container">
-            <div id="profile-section" class="settings-section">
-                <h2>Edit Profile</h2>
-                <div id="profile-loader" style="text-align: center; padding: 2rem 0;">Loading profile...</div>
-            </div>
-
-            <div id="password-section" class="settings-section">
-                <h2>Change Password</h2>
-                <form id="password-form">
-                    <div class="form-group">
-                        <label for="current_password">Current Password</label>
-                        <input type="password" id="current_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_password">New Password</label>
-                        <input type="password" id="new_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" id="confirm_password" required>
-                    </div>
-                    <button type="submit" class="action-button">Update Password</button>
-                    <div id="password-message" class="message"></div>
-                </form>
-            </div>
-
-            <div id="danger-zone" class="settings-section danger-zone">
-                <h2>Danger Zone</h2>
-                <p style="color: var(--text-secondary-color); margin-bottom: 1.5rem;">Once you delete your account, there is no going back. Please be certain.</p>
-                <button id="delete-account-btn" class="action-button delete-btn">Delete Your Account</button>
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-container" id="profile-container">
+                <h1>Edit Profile</h1>
+                <div id="loader" style="text-align: center; padding: 2rem 0;">Loading profile...</div>
             </div>
         </div>
     </main>
@@ -97,28 +67,31 @@
             if (!token) { window.location.href = '/login'; return; }
 
             const navLinks = document.getElementById('nav-links');
-            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/saved-courses">Saved Courses</a><a href="#" id="logout-btn">Logout</a>`;
-            document.getElementById('logout-btn').addEventListener('click', (e) => {
+            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/saved-courses">Saved Courses</a><a href="#" id="logout-link">Logout</a>`;
+            document.getElementById('logout-link').addEventListener('click', (e) => {
                 e.preventDefault();
                 localStorage.clear();
                 window.location.href = '/login';
             });
 
-            const profileSection = document.getElementById('profile-section');
+            const profileContainer = document.getElementById('profile-container');
             let selectedAvatarUrl = '';
             const avatars = ['/static/avatars/1.png', '/static/avatars/2.png', '/static/avatars/3.png', '/static/avatars/4.png', '/static/avatars/5.png', '/static/avatars/6.png'];
-
+            
             try {
                 const response = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) { throw new Error('Could not load profile.'); }
                 const user = await response.json();
                 selectedAvatarUrl = user.avatar_url;
-                
-                const avatarHtml = avatars.map(avatar => `<img src="${avatar}" alt="Avatar" class="${avatar === user.avatar_url ? 'selected' : ''}" data-url="${avatar}">`).join('');
-                
-                profileSection.innerHTML = `
-                    <h2>Edit Profile</h2>
-                    <form id="profile-form">
+
+                let avatarHtml = avatars.map(avatar => {
+                    const isSelected = avatar === user.avatar_url ? 'selected' : '';
+                    return `<img src="${avatar}" alt="Avatar" class="${isSelected}" data-url="${avatar}">`;
+                }).join('');
+
+                profileContainer.innerHTML = `
+                    <h1>Edit Profile</h1>
+                    <form id="profile-form" class="profile-form">
                         <div class="avatar-selector">
                             <h3>Choose Your Avatar</h3>
                             <div class="avatar-grid">${avatarHtml}</div>
@@ -131,89 +104,46 @@
                             <label for="email">Email Address</label>
                             <input type="email" id="email" value="${user.email}" required>
                         </div>
-                        <button type="submit" class="action-button">Save Changes</button>
-                        <div id="profile-message" class="message"></div>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                        <div id="message-container" class="message"></div>
                     </form>`;
-                attachProfileListeners();
+                attachEventListeners();
             } catch (error) {
-                profileSection.innerHTML = `<p class="error">${error.message}</p>`;
+                profileContainer.innerHTML = `<p class="error" style="text-align:center;">${error.message}</p>`;
             }
 
-            function attachProfileListeners() {
-                document.querySelectorAll('.avatar-grid img').forEach(img => {
+            function attachEventListeners() {
+                const avatarImages = document.querySelectorAll('.avatar-grid img');
+                avatarImages.forEach(img => {
                     img.addEventListener('click', () => {
-                        document.querySelectorAll('.avatar-grid img').forEach(i => i.classList.remove('selected'));
+                        avatarImages.forEach(i => i.classList.remove('selected'));
                         img.classList.add('selected');
                         selectedAvatarUrl = img.dataset.url;
                     });
                 });
-                document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                const profileForm = document.getElementById('profile-form');
+                profileForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const msg = document.getElementById('profile-message');
+                    const messageContainer = document.getElementById('message-container');
+                    messageContainer.textContent = '';
+                    const fullName = document.getElementById('full_name').value;
+                    const email = document.getElementById('email').value;
                     try {
                         const res = await fetch('/api/profile', {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
-                            body: JSON.stringify({ fullName: document.getElementById('full_name').value, email: document.getElementById('email').value, avatarUrl: selectedAvatarUrl })
+                            body: JSON.stringify({ fullName, email, avatarUrl: selectedAvatarUrl })
                         });
                         const data = await res.json();
                         if (!res.ok) { throw new Error(data.message); }
-                        msg.textContent = data.message;
-                        msg.className = 'message success';
+                        messageContainer.textContent = data.message;
+                        messageContainer.className = 'message success';
                     } catch (err) {
-                        msg.textContent = err.message || 'Could not update profile.';
-                        msg.className = 'message error';
+                        messageContainer.textContent = err.message || 'Could not update profile.';
+                        messageContainer.className = 'message error';
                     }
                 });
             }
-
-            document.getElementById('password-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const msg = document.getElementById('password-message');
-                const currentPassword = document.getElementById('current_password').value;
-                const newPassword = document.getElementById('new_password').value;
-                const confirmPassword = document.getElementById('confirm_password').value;
-
-                if (newPassword !== confirmPassword) {
-                    msg.textContent = 'New passwords do not match.';
-                    msg.className = 'message error';
-                    return;
-                }
-                
-                try {
-                    const res = await fetch('/api/profile/change-password', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
-                        body: JSON.stringify({ currentPassword, newPassword })
-                    });
-                    const data = await res.json();
-                    if (!res.ok) { throw new Error(data.message); }
-                    msg.textContent = data.message;
-                    msg.className = 'message success';
-                    e.target.reset();
-                } catch (err) {
-                    msg.textContent = err.message || 'Could not update password.';
-                    msg.className = 'message error';
-                }
-            });
-
-            document.getElementById('delete-account-btn').addEventListener('click', async () => {
-                if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                    return;
-                }
-                try {
-                    const res = await fetch('/api/profile/delete', {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}`}
-                    });
-                    if (!res.ok) { throw new Error((await res.json()).message); }
-                    alert('Your account has been successfully deleted.');
-                    localStorage.clear();
-                    window.location.href = '/';
-                } catch (err) {
-                    alert('Error: ' + err.message);
-                }
-            });
         });
     </script>
 </body>

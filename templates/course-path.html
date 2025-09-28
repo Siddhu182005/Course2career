@@ -3,310 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Path Generator - Course2Career</title>
+    <title>Career Path - Course2Career</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563EB; /* Blue-600 */
-            --primary-color-hover: #1D4ED8; /* Blue-700 */
-            --text-color: #1F2937; /* Gray-800 */
-            --text-secondary-color: #6B7280; /* Gray-500 */
-            --background-color: #F9FAFB; /* Gray-50 */
-            --container-bg-color: #EFF6FF; /* Blue-50 */
-            --border-color: #D1D5DB; /* Gray-300 */
-
-            --entry-level-bg: #FEF3C7;
-            --entry-level-text: #92400E;
-            --mid-career-bg: #D1FAE5;
-            --mid-career-text: #065F46;
-            --late-career-bg: #E0E7FF;
-            --late-career-text: #3730A3;
+            --primary-color: #3B82F6; --text-color: #111827; --text-secondary-color: #6B7280;
+            --background-color: #FFFFFF; --container-bg-color: #F9FAFB; --border-color: #E5E7EB;
+            --heading-font: 'Inter', sans-serif; --body-font: 'Inter', sans-serif; --radius: 0.5rem;
         }
-
         html.dark-mode {
-            --primary-color: #3B82F6; /* Blue-500 */
-            --primary-color-hover: #60A5FA; /* Blue-400 */
-            --text-color: #F9FAFB; /* Gray-50 */
-            --text-secondary-color: #9CA3AF; /* Gray-400 */
-            --background-color: #1F2937; /* Gray-800 */
-            --container-bg-color: #111827; /* Gray-900 */
-            --border-color: #374151; /* Gray-700 */
-
-            --entry-level-bg: #4A4228;
-            --entry-level-text: #FBBF24;
-            --mid-career-bg: #2C3A5A;
-            --mid-career-text: #A7F3D0;
-            --late-career-bg: #30375A;
-            --late-career-text: #C7D2FE;
+            --primary-color: #60A5FA; --text-color: #E5E7EB; --text-secondary-color: #9CA3AF;
+            --background-color: #111827; --container-bg-color: #1F2937; --border-color: #374151;
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            background-color: var(--container-bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        header {
-            background-color: var(--background-color);
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        nav a {
-            color: var(--text-secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-
-        nav a:hover {
-            color: var(--primary-color);
-        }
-
-        main {
-            padding: 2rem 0;
-        }
-
-        .content-section {
-            background-color: var(--background-color);
-            padding: 2.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-
-        h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            text-align: center;
-            margin: 0 0 0.5rem 0;
-        }
-
-        .hero-section p {
-            color: var(--text-secondary-color);
-            max-width: 600px;
-            text-align: center;
-            margin: 0 auto 2rem auto;
-        }
-
-        #ai-path-form {
-            display: flex;
-            gap: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
-            align-items: center;
-        }
-
-        #ai-path-query {
-            flex-grow: 1;
-            background-color: #FFF;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            color: var(--text-color);
-        }
-
-        #ai-path-form button {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background-color 0.2s;
-        }
-
-        #ai-path-form button:hover {
-            background-color: var(--primary-color-hover);
-        }
-
-        #ai-path-result-container {
-            margin-top: 3rem;
-        }
-
-        .path-title {
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .path-description {
-            text-align: center;
-            color: var(--text-secondary-color);
-            margin-bottom: 2.5rem;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .career-path {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            position: relative;
-        }
-
-        .path-stage {
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-        }
-
-        .path-stage h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0 0 1.5rem 0;
-            text-align: center;
-        }
-
-        .entry-level { background-color: var(--entry-level-bg); color: var(--entry-level-text); }
-        .mid-career { background-color: var(--mid-career-bg); color: var(--mid-career-text); }
-        .late-career { background-color: var(--late-career-bg); color: var(--late-career-text); }
-
-        .role-card {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            text-align: center;
-            position: relative;
-        }
-
-        .role-title {
-            font-weight: 600;
-        }
-
-        .role-salary {
-            color: var(--text-secondary-color);
-            font-size: 0.9rem;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary-color);
-        }
+        body { font-family: var(--body-font); margin: 0; background-color: var(--container-bg-color); color: var(--text-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        header { background-color: var(--background-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .header-logo { font-weight: 700; font-size: 1.5rem; color: var(--text-color); text-decoration: none; }
+        nav { display: flex; align-items: center; gap: 1.5rem; }
+        nav a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s ease; }
+        nav a:hover { color: var(--primary-color); }
+        main { padding: 3rem 0; }
+        .content-section { background-color: var(--background-color); padding: 2.5rem; border-radius: var(--radius); text-align: center; border: 1px solid var(--border-color); }
+        h1 { font-size: 2.5rem; font-weight: 700; margin: 0 0 1rem 0; }
+        p { color: var(--text-secondary-color); max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6; }
+        .path-image-container img { max-width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
     <header>
         <div class="container header-content">
             <a href="/" class="header-logo">Course2Career</a>
-            <nav id="nav-links">
-                <a href="/dashboard">Dashboard</a>
-                <a href="/saved-courses">Saved Courses</a>
-                <a href="/profile">Profile</a>
-                <a href="#" id="logout-btn">Logout</a>
-            </nav>
+            <nav id="nav-links"></nav>
         </div>
     </header>
     <main>
         <div class="container">
             <div class="content-section">
-                <div class="hero-section">
-                    <h1>AI Career Path Visualizer</h1>
-                    <p>Describe a career field, and our AI will generate a visual flowchart of the typical progression, roles, and salaries.</p>
-                </div>
-                <form id="ai-path-form">
-                    <input type="text" id="ai-path-query" placeholder="e.g., 'Data Scientist'" required>
-                    <button type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 1.75a.75.75 0 0 1 .75.75v3.5h3.5a.75.75 0 0 1 0 1.5h-3.5v3.5a.75.75 0 0 1-1.5 0v-3.5h-3.5a.75.75 0 0 1 0-1.5h3.5v-3.5A.75.75 0 0 1 8 1.75z"/>
-                        </svg>
-                        Visualize Path
-                    </button>
-                </form>
-                <div id="ai-path-result-container">
-                    <!-- Example structure based on the image -->
-                    <div id="career-path-visualization" style="display: none;">
-                        <h2 class="path-title">Data Scientist Career Path</h2>
-                        <p class="path-description">A journey through the world of data, analytics, and machine learning.</p>
-                        <div class="career-path">
-                            <div class="path-stage entry-level">
-                                <h3>Entry Level</h3>
-                                <div class="role-card" id="role-1">
-                                    <div class="role-title">Data Analyst</div>
-                                    <div class="role-salary">₹4L - ₹6L / yr</div>
-                                </div>
-                                <div class="role-card" id="role-2">
-                                    <div class="role-title">Data Analyst</div>
-                                    <div class="role-salary">₹6L - ₹12L / yr</div>
-                                </div>
-                                <div class="role-card" id="role-3">
-                                    <div class="role-title">Data Scientist (Junior)</div>
-                                    <div class="role-salary">₹6L - ₹9L / yr</div>
-                                </div>
-                            </div>
-                            <div class="path-stage mid-career">
-                                <h3>Mid Career</h3>
-                                <div class="role-card" id="role-4">
-                                    <div class="role-title">Machine Learning Engineer</div>
-                                    <div class="role-salary"> </div>
-                                </div>
-                                <div class="role-card" id="role-5">
-                                    <div class="role-title">Business Intelligence Engineer</div>
-                                    <div class="role-salary">₹7L - 10 / yr</div>
-                                </div>
-                                <div class="role-card" id="role-6">
-                                    <div class="role-title">Analytics Manager</div>
-                                    <div class="role-salary">₹12L - ₹20 / yr</div>
-                                </div>
-                            </div>
-                            <div class="path-stage late-career">
-                                <h3>Late Career</h3>
-                                <div class="role-card" id="role-7">
-                                    <div class="role-title">Data Scientist, Senior</div>
-                                    <div class="role-salary">₹10L - ₹18 / yr</div>
-                                </div>
-                                <div class="role-card" id="role-8">
-                                    <div class="role-title">Analytics Manager</div>
-                                    <div class="role-salary">₹12L - ₹28 / yr</div>
-                                </div>
-                                <div class="role-card" id="role-9">
-                                    <div class="role-title">Head of Data / Chief Data Officer</div>
-                                    <div class="role-salary">₹30L - ₹30+ / yr</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h1>IT & Cybersecurity Career Path</h1>
+                <p>This is an example visualization of how different roles in the IT industry connect and progress over time, from entry-level to executive positions.</p>
+                <div class="path-image-container">
+                    <img src="/static/coursepath.jpg" alt="IT and Cybersecurity Career Path">
                 </div>
             </div>
         </div>
@@ -316,102 +54,19 @@
             <p>&copy; 2025 Course2Career. All Rights Reserved.</p>
         </div>
     </footer>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('authToken');
-            if (!token) {
-                window.location.href = '/login';
-                return;
-            }
-
-            const logoutBtn = document.getElementById('logout-btn');
-            if(logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.clear();
-                    window.location.href = '/login';
-                });
-            }
-
-            const form = document.getElementById('ai-path-form');
-            form.addEventListener('submit', async (e) => {
+            if (!token) { window.location.href = '/login'; return; }
+            
+            const navLinks = document.getElementById('nav-links');
+            navLinks.innerHTML = `<a href="/dashboard">Dashboard</a><a href="/saved-courses">Saved Courses</a><a href="/profile">Profile</a><a href="#" id="logout-btn">Logout</a>`;
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
                 e.preventDefault();
-                const query = document.getElementById('ai-path-query').value;
-                const resultContainer = document.getElementById('ai-path-result-container');
-                resultContainer.innerHTML = `<p style="text-align: center; padding: 2rem 0;">Generating your visual career path...</p>`;
-
-                try {
-                    const response = await fetch('/api/generate-career-path', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ query })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Failed to generate career path.');
-                    }
-
-                    const pathData = await response.json();
-                    renderCareerPath(pathData);
-
-                } catch (error) {
-                    resultContainer.innerHTML = `<p style="color: #ef4444; text-align: center;">Error: ${error.message}</p>`;
-                }
+                localStorage.clear();
+                window.location.href = '/login';
             });
         });
-
-        function renderCareerPath(data) {
-            const container = document.getElementById('ai-path-result-container');
-            
-            const stages = {
-                'Entry Level': [],
-                'Mid Career': [],
-                'Late Career': []
-            };
-
-            data.flowchart.roles.forEach(role => {
-                if (stages[role.stage]) {
-                    stages[role.stage].push(role);
-                }
-            });
-
-            const stageToClass = {
-                'Entry Level': 'entry-level',
-                'Mid Career': 'mid-career',
-                'Late Career': 'late-career'
-            };
-            
-            let html = `
-                <h2 class="path-title">${data.title}</h2>
-                <p class="path-description">${data.description}</p>
-                <div class="career-path">
-            `;
-
-            for (const stageName in stages) {
-                html += `
-                    <div class="path-stage ${stageToClass[stageName]}">
-                        <h3>${stageName}</h3>
-                        ${stages[stageName].map(role => `
-                            <div class="role-card" data-id="role-${role.id}">
-                                <div class="role-title">${role.title}</div>
-                                <div class="role-salary">${role.salary}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-
-            html += `</div>`;
-            container.innerHTML = html;
-            
-            // Note: Drawing connecting lines would require a more complex setup with SVG or a library.
-            // This implementation focuses on the structured layout as a first step.
-        }
     </script>
 </body>
 </html>
