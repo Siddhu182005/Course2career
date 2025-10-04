@@ -282,7 +282,7 @@
             <div class="content-section">
                 <div class="container">
                     <div class="content-box">
-                        <h1>🚀 AI Course Generator</h1>
+                        <h1>🚀 Course Generator</h1>
                         <p>Describe any skill or career goal, and our AI will craft the perfect learning path for you in seconds.</p>
                         <form id="ai-course-form" class="ai-form">
                             <input type="text" id="ai-course-query" placeholder="e.g., 'Become a product manager' or 'Learn web development'" required>
@@ -366,8 +366,17 @@
     </footer>
 
     <script>
-        const API_BASE = '/api';
         const state = { token: localStorage.getItem('authToken'), userId: localStorage.getItem('userId'), role: localStorage.getItem('userRole'), savedCourses: [] };
+        
+        let mockDb = {
+            users: [
+                { id: 1, full_name: 'Admin User', email: 'admin@example.com', role: 'admin', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString() },
+                { id: 2, full_name: 'John Doe', email: 'john@example.com', role: 'user', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString() },
+                { id: 3, full_name: 'Jane Smith', email: 'jane@example.com', role: 'user', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString() }
+            ],
+            savedCourses: []
+        };
+
         const showToast = (message, type = 'error') => {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -384,21 +393,74 @@
             document.getElementById('modal-cancel').onclick = () => { modal.classList.remove('active'); };
         };
         const apiRequest = async (endpoint, method = 'GET', body = null) => {
-            const options = { method, headers: { 'Content-Type': 'application/json' } };
-            if (state.token) { options.headers['Authorization'] = `Bearer ${state.token}`; }
-            if (body) { options.body = JSON.stringify(body); }
-            const response = await fetch(`${API_BASE}${endpoint}`, options);
-            const data = await response.json();
-            if (!response.ok) { throw new Error(data.error || 'Something went wrong'); }
-            return data;
+            console.log(`Mock API Request: ${method} ${endpoint}`);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (endpoint === '/users' && method === 'GET') {
+                        resolve(mockDb.users);
+                    } else if (endpoint.startsWith('/users/') && method === 'DELETE') {
+                        const id = parseInt(endpoint.split('/')[2]);
+                        const initialLength = mockDb.users.length;
+                        mockDb.users = mockDb.users.filter(u => u.id !== id);
+                        if (mockDb.users.length < initialLength) resolve({ message: 'User deleted' });
+                        else reject({ error: 'User not found' });
+                    } else if (endpoint === '/generate-course-with-ai' && method === 'POST') {
+                        resolve({ title: "Mastering Web Development", description: "A comprehensive journey into modern web development, covering everything from frontend frameworks to backend architecture.", startingSalary: "$75,000 - $95,000 / yr", duration: "6 Months", difficulty: "Intermediate", skills: ["HTML5 & CSS3", "JavaScript (ES6+)", "React", "Node.js", "Express", "MongoDB", "REST APIs"], modules: [{ title: "Module 1: Frontend Fundamentals", description: "Deep dive into HTML, CSS, and advanced JavaScript concepts." },{ title: "Module 2: React & State Management", description: "Master React, JSX, hooks, and global state management with Redux or Context API." },{ title: "Module 3: Backend with Node.js & Express", description: "Build robust server-side applications and RESTful APIs." }]});
+                    } else if (endpoint === '/generate-career-path' && method === 'POST') {
+                        resolve({ title: "Software Engineering Career Path", description: "A typical career progression for a software engineer, from entry-level to senior leadership roles.", flowchart: { roles: [ { stage: "Entry Level", title: "Junior Developer", salary: "$60k - $80k" }, { stage: "Entry Level", title: "Software Engineer I", salary: "$70k - $95k" }, { stage: "Mid Career", title: "Software Engineer II", salary: "$90k - $125k" }, { stage: "Mid Career", title: "Senior Software Engineer", salary: "$120k - $160k" }, { stage: "Late Career", title: "Staff Engineer", salary: "$150k - $200k+" }, { stage: "Late Career", title: "Principal Engineer", salary: "$180k - $250k+" }]}});
+                    } else if (endpoint === '/saved-courses' && method === 'GET') {
+                        resolve(mockDb.savedCourses);
+                    } else if (endpoint === '/saved-courses' && method === 'POST') {
+                        const newCourse = { id: Date.now(), course_title: body.courseData.title, course_data: JSON.stringify(body.courseData) };
+                        mockDb.savedCourses.push(newCourse);
+                        resolve(newCourse);
+                    } else if (endpoint === '/login' && method === 'POST') {
+                        const user = mockDb.users.find(u => u.email === body.email);
+                        if(user) resolve({ token: 'mock-token', userId: user.id, role: user.role });
+                        else reject({ error: 'Invalid credentials' });
+                    } else if (endpoint === '/signup' && method === 'POST') {
+                        const newUser = { id: Date.now(), full_name: body.fullName, email: body.email, role: 'user', created_at: new Date().toISOString() };
+                        mockDb.users.push(newUser);
+                        resolve({ message: 'User created' });
+                    } else if (endpoint === '/profile' && method === 'GET') {
+                        const user = mockDb.users.find(u => u.id === parseInt(state.userId));
+                        if(user) resolve(user);
+                        else reject({ error: 'User not found' });
+                    } else if (endpoint === '/profile' && method === 'PUT') {
+                        const user = mockDb.users.find(u => u.id === parseInt(state.userId));
+                        if(user) {
+                            user.full_name = body.fullName;
+                            user.email = body.email;
+                            resolve(user);
+                        } else reject({ error: 'User not found' });
+                    }
+                    else {
+                        reject({ error: `Mock endpoint ${method} ${endpoint} not found` });
+                    }
+                }, 500);
+            });
         };
         const updateNav = () => {
             const nav = document.getElementById('nav-links');
-            if (state.token) {
-                nav.innerHTML = `<a href="#dashboard">Dashboard</a><a href="#career-path">Career Paths</a><a href="#saved-courses">Saved</a><a href="#profile">Profile</a>${state.role === 'admin' ? '<a href="#admin">Admin</a>' : ''}<a href="#" id="logout-btn" class="btn-primary">Logout</a>`;
-                document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
+            const isLoggedIn = !!state.token;
+            
+            if (isLoggedIn) {
+                 nav.innerHTML = `
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#career-path">Career Paths</a>
+                    <a href="#saved-courses">Saved</a>
+                    <a href="#profile">Profile</a>
+                    ${state.role === 'admin' ? '<a href="#admin">Admin</a>' : ''}
+                    <a href="#" id="logout-btn" class="btn-primary">Logout</a>
+                `;
+                 document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
             } else {
-                nav.innerHTML = `<a href="#login">Sign In</a><a href="#signup" class="btn-primary">Sign Up</a>`;
+                 nav.innerHTML = `
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#career-path">Career Paths</a>
+                    <a href="#login">Sign In</a>
+                    <a href="#signup" class="btn-primary">Sign Up</a>
+                `;
             }
         };
         const logout = () => {
@@ -407,21 +469,35 @@
             state.userId = null;
             state.role = null;
             window.location.hash = '#landing';
+            router();
         };
         const router = () => {
             const hash = window.location.hash.slice(1) || 'landing';
-            const protectedRoutes = ['dashboard', 'career-path', 'saved-courses', 'profile', 'admin'];
-            if (protectedRoutes.includes(hash) && !state.token) { window.location.hash = '#login'; return; }
-            if ((hash === 'login' || hash === 'signup') && state.token) { window.location.hash = '#dashboard'; return; }
-            document.querySelectorAll('.view-section').forEach(section => { section.classList.remove('active'); });
+            const authRoutes = ['login', 'signup'];
+            
+            if (state.token && authRoutes.includes(hash)) {
+                window.location.hash = '#dashboard';
+                return;
+            }
+
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
             const currentView = document.getElementById(`view-${hash}`);
             if (currentView) {
                 currentView.classList.add('active');
                 document.querySelectorAll('.nav-links a').forEach(link => {
                     link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${hash}`) { link.classList.add('active'); }
+                    if (link.getAttribute('href') === `#${hash}`) {
+                        link.classList.add('active');
+                    }
                 });
-                if (viewInitializers[hash]) { viewInitializers[hash](); }
+                if (viewInitializers[hash]) {
+                    viewInitializers[hash]();
+                }
+            } else {
+                 document.getElementById('view-landing').classList.add('active');
             }
             updateNav();
         };
@@ -435,7 +511,7 @@
                     submitBtn.textContent = 'Signing In...';
                     try {
                         const formData = new FormData(form);
-                        const data = await apiRequest('/login', 'POST', { email: formData.get('email'), password: formData.get('password') });
+                        const data = await apiRequest('/login', 'POST', { email: formData.get('email'), password: "password" });
                         state.token = data.token;
                         state.userId = data.userId;
                         state.role = data.role;
@@ -444,8 +520,10 @@
                         localStorage.setItem('userRole', data.role);
                         showToast('Welcome back!', 'success');
                         window.location.hash = '#dashboard';
+                        router();
                     } catch (error) {
                         showToast(error.message);
+                    } finally {
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Sign In';
                     }
@@ -465,6 +543,7 @@
                         window.location.hash = '#login';
                     } catch (error) {
                         showToast(error.message);
+                    } finally {
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Create Account';
                     }
@@ -476,12 +555,11 @@
                     e.preventDefault();
                     const resultContainer = document.getElementById('ai-course-result');
                     const submitBtn = form.querySelector('button[type="submit"]');
-                    const query = document.getElementById('ai-course-query').value;
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Generating...';
                     resultContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';
                     try {
-                        const courseData = await apiRequest('/generate-course-with-ai', 'POST', { query });
+                        const courseData = await apiRequest('/generate-course-with-ai', 'POST', {});
                         renderCourseCard(courseData, resultContainer, true);
                     } catch (error) {
                         resultContainer.innerHTML = '';
@@ -498,12 +576,11 @@
                     e.preventDefault();
                     const resultContainer = document.getElementById('ai-path-result');
                     const submitBtn = form.querySelector('button[type="submit"]');
-                    const query = document.getElementById('ai-path-query').value;
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Visualizing...';
                     resultContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Mapping your career path...</p></div>';
                     try {
-                        const pathData = await apiRequest('/generate-career-path', 'POST', { query });
+                        const pathData = await apiRequest('/generate-career-path', 'POST', {});
                         renderCareerPath(pathData, resultContainer);
                     } catch (error) {
                         resultContainer.innerHTML = '';
@@ -515,6 +592,10 @@
                 };
             },
             'saved-courses': async () => {
+                if (!state.token) { 
+                    document.getElementById('saved-courses-content').innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>Please Sign In</h3><p>Sign in to view and manage your saved courses.</p><a href="#login" class="btn btn-primary" style="margin-top: 1.5rem;">Sign In</a></div>';
+                    return;
+                }
                 const container = document.getElementById('saved-courses-content');
                 container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your saved courses...</p></div>';
                 try {
@@ -544,6 +625,7 @@
                 }
             },
             'profile': async () => {
+                if (!state.token) { return; }
                 try {
                     const user = await apiRequest('/profile');
                     document.getElementById('profile-fullName').value = user.full_name;
@@ -565,6 +647,10 @@
                 };
             },
             'admin': async () => {
+                 if (state.role !== 'admin') { 
+                    document.getElementById('admin-content').innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>Access Denied</h3><p>You do not have permission to view this page.</p></div>';
+                    return; 
+                }
                 const container = document.getElementById('admin-content');
                 container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading users...</p></div>';
                 try {
@@ -577,8 +663,19 @@
             }
         };
         const renderCourseCard = (course, container, showSaveBtn) => {
-            container.innerHTML = `<div class="course-card"><div class="course-header"><h3>${course.title}</h3><p>${course.description}</p></div><div class="course-stats"><div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${course.startingSalary}</span></div><div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${course.duration}</span></div><div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${course.difficulty}</span></div></div><div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${course.skills.map(skill => `<li class="skill-tag">${skill}</li>`).join('')}</ul></div><div class="modules-section"><h4>Course Modules</h4><div class="module-list">${course.modules.map(module => `<div class="module-item"><h5>${module.title}</h5><p>${module.description}</p></div>`).join('')}</div></div>${showSaveBtn ? '<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>' : ''}</div>`;
-            if (showSaveBtn) {
+            const isSaved = state.token && mockDb.savedCourses.some(c => c.course_title === course.title);
+            let saveButtonHtml = '';
+            if (showSaveBtn && state.token) {
+                if (isSaved) {
+                     saveButtonHtml = '<button class="btn btn-primary" style="margin-top: 2rem; width: 100%;" disabled>✓ Saved</button>';
+                } else {
+                     saveButtonHtml = '<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>';
+                }
+            }
+
+            container.innerHTML = `<div class="course-card"><div class="course-header"><h3>${course.title}</h3><p>${course.description}</p></div><div class="course-stats"><div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${course.startingSalary}</span></div><div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${course.duration}</span></div><div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${course.difficulty}</span></div></div><div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${course.skills.map(skill => `<li class="skill-tag">${skill}</li>`).join('')}</ul></div><div class="modules-section"><h4>Course Modules</h4><div class="module-list">${course.modules.map(module => `<div class="module-item"><h5>${module.title}</h5><p>${module.description}</p></div>`).join('')}</div></div>${saveButtonHtml}</div>`;
+            
+            if (showSaveBtn && state.token && !isSaved) {
                 document.getElementById('save-course-btn').onclick = async (e) => {
                     e.target.disabled = true;
                     e.target.textContent = 'Saving...';
@@ -600,7 +697,7 @@
             container.innerHTML = `<div class="career-path-container"><div class="path-header"><h2>${data.title}</h2><p>${data.description}</p></div><div class="career-stages">${Object.entries(stages).map(([stageName, roles]) => `<div class="career-stage ${stageName.toLowerCase().replace(' ', '')}"><div class="stage-header"><h3>${stageName}</h3></div>${roles.map(role => `<div class="role-card"><div class="role-title">${role.title}</div><div class="role-salary">${role.salary}</div></div>`).join('')}</div>`).join('')}</div></div>`;
         };
         const renderAdminTable = (users, container) => {
-            container.innerHTML = `<div class="content-box" style="padding: 0; overflow-x: auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.full_name}</td><td>${user.email}</td><td><span style="text-transform: capitalize;">${user.role}</span></td><td>${new Date(user.created_at).toLocaleDateString()}</td><td>${user.id !== parseInt(state.userId) ? `<button class="delete-btn" data-id="${user.id}">Delete</button>` : '<span style="color: var(--text-light);">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+            container.innerHTML = `<div class="content-box" style="padding: 0; overflow-x: auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.full_name}</td><td>${user.email}</td><td><span style="text-transform: capitalize;">${user.role}</span></td><td>${new Date(user.created_at).toLocaleDateString()}</td><td>${user.id !== state.userId ? `<button class="delete-btn" data-id="${user.id}">Delete</button>` : '<span style="color: var(--text-light);">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
             container.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.onclick = () => {
                     showModal('Delete User?', 'This action cannot be undone. All user data will be permanently deleted.', async () => {
@@ -622,3 +719,4 @@
     </script>
 </body>
 </html>
+
