@@ -36,7 +36,7 @@
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
         .btn-secondary { background: white; color: var(--text-primary); border: 2px solid var(--border); }
         .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
         .features { padding: 5rem 1.5rem; }
         .section-header { text-align: center; margin-bottom: 4rem; }
         .section-header h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; }
@@ -93,29 +93,31 @@
         .path-header { text-align: center; margin-bottom: 3rem; }
         .path-header h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #1f2937, #4b5563); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
         .career-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .career-stage { color: white; border-radius: var(--radius-xl); padding: 2rem; border-top: none; box-shadow: var(--shadow-lg); transition: all 0.3s ease; }
+        .career-stage { color: white; border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow-lg); transition: all 0.3s ease; }
         .career-stage:hover { transform: translateY(-5px); box-shadow: var(--shadow-xl); }
-        .career-stage.entry { background: linear-gradient(135deg, #f97316, #ea580c); }
-        .career-stage.mid { background: linear-gradient(135deg, #10b981, #059669); }
-        .career-stage.late { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .career-stage.entry { background: linear-gradient(135deg, #84cc16, #4d7c0f); }
+        .career-stage.mid { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+        .career-stage.late { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
         .stage-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 1rem;}
         .stage-header h3 { font-size: 1.5rem; font-weight: 700; }
-        .role-card { padding: 1.25rem; background: rgba(0,0,0,0.15); border-radius: var(--radius-lg); margin-bottom: 1rem; text-align: center; transition: all 0.2s ease; }
-        .role-card:hover { background: rgba(0,0,0,0.3); transform: scale(1.03); }
+        .role-card { padding: 1.25rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius-lg); margin-bottom: 1rem; text-align: center; transition: all 0.2s ease; }
+        .role-card:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.03); }
         .role-title { font-weight: 700; margin-bottom: 0.5rem; }
-        .role-salary { color: rgba(255,255,255,0.8); font-size: 0.875rem; }
+        .role-salary { color: rgba(255,255,255,0.9); font-size: 0.875rem; }
         .saved-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
         .saved-sidebar { background: white; border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border); position: sticky; top: 100px; }
         .saved-sidebar h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
         .saved-list { display: flex; flex-direction: column; gap: 0.5rem; }
         .saved-item { width: 100%; text-align: left; padding: 1rem; background: var(--bg-secondary); border: 2px solid transparent; border-radius: var(--radius-md); font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
         .saved-item:hover { background: var(--bg-tertiary); }
-        .saved-item.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .saved-item.active { background: var(--primary-light); color: var(--primary-dark); border-color: var(--primary); font-weight: 600; }
         .saved-display { min-height: 400px; }
-        .admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius-xl); overflow: hidden; }
-        .admin-table th, .admin-table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-md); }
+        .admin-table th, .admin-table td { padding: 1rem 1.5rem; text-align: left; }
         .admin-table th { background: var(--bg-secondary); font-weight: 700; font-size: 0.875rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; }
-        .admin-table tr:hover { background: var(--bg-secondary); }
+        .admin-table tr { border-bottom: 1px solid var(--border); }
+        .admin-table tr:last-child { border-bottom: none; }
+        .admin-table tr:hover { background: var(--bg-tertiary); }
         .delete-btn { padding: 0.5rem 1rem; background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
         .delete-btn:hover { background: var(--danger); color: white; }
         .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 10000; display: flex; flex-direction: column; gap: 1rem; }
@@ -129,9 +131,9 @@
         .modal-overlay.active .modal-content { transform: scale(1); }
         .modal-header { margin-bottom: 1rem; }
         .modal-header h3 { font-size: 1.5rem; font-weight: 700; }
-        .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; }
-        .modal-actions button { flex: 1; padding: 0.75rem; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        .modal-actions .cancel { background: var(--bg-secondary); color: var(--text-primary); }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end; }
+        .modal-actions button { flex-grow: 0; padding: 0.75rem 1.5rem; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .modal-actions .cancel { background: var(--bg-tertiary); color: var(--text-primary); }
         .modal-actions .confirm { background: var(--danger); color: white; }
         footer { background: white; border-top: 1px solid var(--border); padding: 3rem 1.5rem; margin-top: 5rem; }
         .footer-content { max-width: 1280px; margin: 0 auto; text-align: center; }
@@ -146,23 +148,23 @@
             .hero-buttons .btn { width: 100%; justify-content: center; }
             .feature-grid { grid-template-columns: 1fr; }
             .ai-form { flex-direction: column; }
-            .course-stats { grid-template-columns: 1fr; }
+            .course-stats { grid-template-columns: 1fr 1fr; }
             .career-stages { grid-template-columns: 1fr; }
             .saved-layout { grid-template-columns: 1fr; }
             .saved-sidebar { position: static; }
             .auth-card { padding: 2rem; }
-            .toast-container { left: 1rem; right: 1rem; }
+            .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
             .toast { min-width: auto; }
         }
         @media (max-width: 480px) {
             .content-box { padding: 1.5rem; }
             .course-card { padding: 1.5rem; }
+            .course-stats { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div id="toast-container" class="toast-container"></div>
-    
     <div id="modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -175,7 +177,6 @@
             </div>
         </div>
     </div>
-
     <header id="header">
         <div class="header-content">
             <a href="#landing" class="logo">Course2Career</a>
@@ -187,7 +188,6 @@
             <nav class="nav-links" id="nav-links"></nav>
         </div>
     </header>
-
     <main>
         <section id="view-landing" class="view-section">
             <div class="hero">
@@ -200,7 +200,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="features">
                 <div class="container">
                     <div class="section-header">
@@ -227,7 +226,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-login" class="view-section">
             <div class="auth-wrapper">
                 <div class="auth-card">
@@ -250,7 +248,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-signup" class="view-section">
             <div class="auth-wrapper">
                 <div class="auth-card">
@@ -277,7 +274,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-dashboard" class="view-section">
             <div class="content-section">
                 <div class="container">
@@ -293,7 +289,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-career-path" class="view-section">
             <div class="content-section">
                 <div class="container">
@@ -309,7 +304,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-saved-courses" class="view-section">
             <div class="content-section">
                 <div class="container">
@@ -321,7 +315,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-profile" class="view-section">
             <div class="content-section">
                 <div class="container" style="max-width: 700px;">
@@ -345,7 +338,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-admin" class="view-section">
             <div class="content-section">
                 <div class="container">
@@ -358,25 +350,13 @@
             </div>
         </section>
     </main>
-
     <footer>
         <div class="footer-content">
             <p>&copy; 2025 Course2Career. All rights reserved.</p>
         </div>
     </footer>
-
     <script>
         const state = { token: localStorage.getItem('authToken'), userId: localStorage.getItem('userId'), role: localStorage.getItem('userRole'), savedCourses: [] };
-        
-        let mockDb = {
-            users: [
-                { id: 1, full_name: 'Admin User', email: 'admin@example.com', role: 'admin', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString() },
-                { id: 2, full_name: 'John Doe', email: 'john@example.com', role: 'user', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString() },
-                { id: 3, full_name: 'Jane Smith', email: 'jane@example.com', role: 'user', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString() }
-            ],
-            savedCourses: []
-        };
-
         const showToast = (message, type = 'error') => {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -396,46 +376,15 @@
             console.log(`Mock API Request: ${method} ${endpoint}`);
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    if (endpoint === '/users' && method === 'GET') {
-                        resolve(mockDb.users);
-                    } else if (endpoint.startsWith('/users/') && method === 'DELETE') {
-                        const id = parseInt(endpoint.split('/')[2]);
-                        const initialLength = mockDb.users.length;
-                        mockDb.users = mockDb.users.filter(u => u.id !== id);
-                        if (mockDb.users.length < initialLength) resolve({ message: 'User deleted' });
-                        else reject({ error: 'User not found' });
-                    } else if (endpoint === '/generate-course-with-ai' && method === 'POST') {
-                        resolve({ title: "Mastering Web Development", description: "A comprehensive journey into modern web development, covering everything from frontend frameworks to backend architecture.", startingSalary: "$75,000 - $95,000 / yr", duration: "6 Months", difficulty: "Intermediate", skills: ["HTML5 & CSS3", "JavaScript (ES6+)", "React", "Node.js", "Express", "MongoDB", "REST APIs"], modules: [{ title: "Module 1: Frontend Fundamentals", description: "Deep dive into HTML, CSS, and advanced JavaScript concepts." },{ title: "Module 2: React & State Management", description: "Master React, JSX, hooks, and global state management with Redux or Context API." },{ title: "Module 3: Backend with Node.js & Express", description: "Build robust server-side applications and RESTful APIs." }]});
+                    if (endpoint === '/generate-course-with-ai' && method === 'POST') {
+                        const query = body.query || "Web Development";
+                        resolve({ title: `Mastering ${query}`, description: "A comprehensive journey into modern web development, from frontend frameworks to backend architecture.", startingSalary: "₹6L - ₹10L / yr", duration: "6 Months", difficulty: "Intermediate", skills: ["HTML5 & CSS3", "JavaScript (ES6+)", "React", "Node.js", "Express", "MongoDB", "REST APIs"], modules: [{ title: "Module 1: Frontend Fundamentals", description: "Deep dive into HTML, CSS, and advanced JavaScript concepts." },{ title: "Module 2: React & State Management", description: "Master React, JSX, hooks, and global state management." },{ title: "Module 3: Backend with Node.js & Express", description: "Build robust server-side applications and RESTful APIs." }]});
                     } else if (endpoint === '/generate-career-path' && method === 'POST') {
-                        resolve({ title: "Software Engineering Career Path", description: "A typical career progression for a software engineer, from entry-level to senior leadership roles.", flowchart: { roles: [ { stage: "Entry Level", title: "Junior Developer", salary: "$60k - $80k" }, { stage: "Entry Level", title: "Software Engineer I", salary: "$70k - $95k" }, { stage: "Mid Career", title: "Software Engineer II", salary: "$90k - $125k" }, { stage: "Mid Career", title: "Senior Software Engineer", salary: "$120k - $160k" }, { stage: "Late Career", title: "Staff Engineer", salary: "$150k - $200k+" }, { stage: "Late Career", title: "Principal Engineer", salary: "$180k - $250k+" }]}});
-                    } else if (endpoint === '/saved-courses' && method === 'GET') {
-                        resolve(mockDb.savedCourses);
-                    } else if (endpoint === '/saved-courses' && method === 'POST') {
-                        const newCourse = { id: Date.now(), course_title: body.courseData.title, course_data: JSON.stringify(body.courseData) };
-                        mockDb.savedCourses.push(newCourse);
-                        resolve(newCourse);
-                    } else if (endpoint === '/login' && method === 'POST') {
-                        const user = mockDb.users.find(u => u.email === body.email);
-                        if(user) resolve({ token: 'mock-token', userId: user.id, role: user.role });
-                        else reject({ error: 'Invalid credentials' });
-                    } else if (endpoint === '/signup' && method === 'POST') {
-                        const newUser = { id: Date.now(), full_name: body.fullName, email: body.email, role: 'user', created_at: new Date().toISOString() };
-                        mockDb.users.push(newUser);
-                        resolve({ message: 'User created' });
-                    } else if (endpoint === '/profile' && method === 'GET') {
-                        const user = mockDb.users.find(u => u.id === parseInt(state.userId));
-                        if(user) resolve(user);
-                        else reject({ error: 'User not found' });
-                    } else if (endpoint === '/profile' && method === 'PUT') {
-                        const user = mockDb.users.find(u => u.id === parseInt(state.userId));
-                        if(user) {
-                            user.full_name = body.fullName;
-                            user.email = body.email;
-                            resolve(user);
-                        } else reject({ error: 'User not found' });
+                        const query = body.query || "Software Engineering";
+                        resolve({ title: `${query} Career Path`, description: "A typical career progression for this field, from entry-level to senior leadership roles.", flowchart: { roles: [ { stage: "Entry Level", title: "Junior Developer", salary: "₹4L - ₹7L / yr" }, { stage: "Entry Level", title: "Software Engineer I", salary: "₹6L - ₹9L / yr" }, { stage: "Mid Career", title: "Software Engineer II", salary: "₹10L - ₹18L / yr" }, { stage: "Mid Career", title: "Senior Software Engineer", salary: "₹16L - ₹25L / yr" }, { stage: "Late Career", title: "Staff Engineer", salary: "₹25L - ₹40L+ / yr" }, { stage: "Late Career", title: "Principal Engineer", salary: "₹40L - ₹60L+ / yr" }]}});
                     }
                     else {
-                        reject({ error: `Mock endpoint ${method} ${endpoint} not found` });
+                        resolve({});
                     }
                 }, 500);
             });
@@ -443,7 +392,6 @@
         const updateNav = () => {
             const nav = document.getElementById('nav-links');
             const isLoggedIn = !!state.token;
-            
             if (isLoggedIn) {
                  nav.innerHTML = `
                     <a href="#dashboard">Dashboard</a>
@@ -453,7 +401,7 @@
                     ${state.role === 'admin' ? '<a href="#admin">Admin</a>' : ''}
                     <a href="#" id="logout-btn" class="btn-primary">Logout</a>
                 `;
-                 document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
+                document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
             } else {
                  nav.innerHTML = `
                     <a href="#dashboard">Dashboard</a>
@@ -474,16 +422,13 @@
         const router = () => {
             const hash = window.location.hash.slice(1) || 'landing';
             const authRoutes = ['login', 'signup'];
-            
             if (state.token && authRoutes.includes(hash)) {
                 window.location.hash = '#dashboard';
                 return;
             }
-
             document.querySelectorAll('.view-section').forEach(section => {
                 section.classList.remove('active');
             });
-
             const currentView = document.getElementById(`view-${hash}`);
             if (currentView) {
                 currentView.classList.add('active');
@@ -503,50 +448,15 @@
         };
         const viewInitializers = {
             'login': () => {
-                const form = document.getElementById('login-form');
-                form.onsubmit = async (e) => {
+                document.getElementById('login-form').onsubmit = (e) => {
                     e.preventDefault();
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Signing In...';
-                    try {
-                        const formData = new FormData(form);
-                        const data = await apiRequest('/login', 'POST', { email: formData.get('email'), password: "password" });
-                        state.token = data.token;
-                        state.userId = data.userId;
-                        state.role = data.role;
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('userId', data.userId);
-                        localStorage.setItem('userRole', data.role);
-                        showToast('Welcome back!', 'success');
-                        window.location.hash = '#dashboard';
-                        router();
-                    } catch (error) {
-                        showToast(error.message);
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Sign In';
-                    }
+                    showToast('This is a demo. Login is not functional.', 'warning');
                 };
             },
             'signup': () => {
-                const form = document.getElementById('signup-form');
-                form.onsubmit = async (e) => {
+                document.getElementById('signup-form').onsubmit = (e) => {
                     e.preventDefault();
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Creating Account...';
-                    try {
-                        const formData = new FormData(form);
-                        await apiRequest('/signup', 'POST', { fullName: formData.get('fullName'), email: formData.get('email'), password: formData.get('password') });
-                        showToast('Account created! Please sign in.', 'success');
-                        window.location.hash = '#login';
-                    } catch (error) {
-                        showToast(error.message);
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Create Account';
-                    }
+                    showToast('This is a demo. Signup is not functional.', 'warning');
                 };
             },
             'dashboard': () => {
@@ -555,11 +465,12 @@
                     e.preventDefault();
                     const resultContainer = document.getElementById('ai-course-result');
                     const submitBtn = form.querySelector('button[type="submit"]');
+                    const query = document.getElementById('ai-course-query').value;
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Generating...';
                     resultContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';
                     try {
-                        const courseData = await apiRequest('/generate-course-with-ai', 'POST', {});
+                        const courseData = await apiRequest('/generate-course-with-ai', 'POST', { query });
                         renderCourseCard(courseData, resultContainer, true);
                     } catch (error) {
                         resultContainer.innerHTML = '';
@@ -576,11 +487,12 @@
                     e.preventDefault();
                     const resultContainer = document.getElementById('ai-path-result');
                     const submitBtn = form.querySelector('button[type="submit"]');
+                    const query = document.getElementById('ai-path-query').value;
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Visualizing...';
                     resultContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Mapping your career path...</p></div>';
                     try {
-                        const pathData = await apiRequest('/generate-career-path', 'POST', {});
+                        const pathData = await apiRequest('/generate-career-path', 'POST', { query });
                         renderCareerPath(pathData, resultContainer);
                     } catch (error) {
                         resultContainer.innerHTML = '';
@@ -591,124 +503,25 @@
                     }
                 };
             },
-            'saved-courses': async () => {
-                if (!state.token) { 
-                    document.getElementById('saved-courses-content').innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>Please Sign In</h3><p>Sign in to view and manage your saved courses.</p><a href="#login" class="btn btn-primary" style="margin-top: 1.5rem;">Sign In</a></div>';
-                    return;
-                }
-                const container = document.getElementById('saved-courses-content');
-                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your saved courses...</p></div>';
-                try {
-                    const courses = await apiRequest('/saved-courses');
-                    state.savedCourses = courses;
-                    if (courses.length === 0) {
-                        container.innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>No Saved Courses Yet</h3><p>Start generating courses and save your favorites!</p><a href="#dashboard" class="btn btn-primary" style="margin-top: 1.5rem;">Generate Your First Course</a></div>';
-                        return;
-                    }
-                    container.innerHTML = `<div class="saved-layout"><div class="saved-sidebar"><h3>Your Courses</h3><div class="saved-list" id="saved-list"></div></div><div class="saved-display" id="saved-display"></div></div>`;
-                    const listContainer = document.getElementById('saved-list');
-                    courses.forEach((course, index) => {
-                        const btn = document.createElement('button');
-                        btn.className = 'saved-item';
-                        btn.textContent = course.course_title;
-                        btn.onclick = () => {
-                            document.querySelectorAll('.saved-item').forEach(b => b.classList.remove('active'));
-                            btn.classList.add('active');
-                            renderCourseCard(JSON.parse(course.course_data), document.getElementById('saved-display'), false);
-                        };
-                        listContainer.appendChild(btn);
-                        if (index === 0) { btn.click(); }
-                    });
-                } catch (error) {
-                    container.innerHTML = '';
-                    showToast(error.message);
-                }
+            'saved-courses': () => {
+                document.getElementById('saved-courses-content').innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>Please Sign In</h3><p>Sign in to view and manage your saved courses. This is a demo page.</p><a href="#login" class="btn btn-primary" style="margin-top: 1.5rem;">Sign In</a></div>';
             },
-            'profile': async () => {
-                if (!state.token) { return; }
-                try {
-                    const user = await apiRequest('/profile');
-                    document.getElementById('profile-fullName').value = user.full_name;
-                    document.getElementById('profile-email').value = user.email;
-                } catch (error) { showToast('Could not load profile'); }
-                const form = document.getElementById('profile-form');
-                form.onsubmit = async (e) => {
-                    e.preventDefault();
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Saving...';
-                    try {
-                        await apiRequest('/profile', 'PUT', { fullName: document.getElementById('profile-fullName').value, email: document.getElementById('profile-email').value });
-                        showToast('Profile updated successfully!', 'success');
-                    } catch (error) { showToast(error.message); } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Save Changes';
-                    }
-                };
-            },
-            'admin': async () => {
-                 if (state.role !== 'admin') { 
-                    document.getElementById('admin-content').innerHTML = '<div class="content-box" style="text-align: center; padding: 4rem 2rem;"><h3>Access Denied</h3><p>You do not have permission to view this page.</p></div>';
-                    return; 
-                }
-                const container = document.getElementById('admin-content');
-                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading users...</p></div>';
-                try {
-                    const users = await apiRequest('/users');
-                    renderAdminTable(users, container);
-                } catch (error) {
-                    container.innerHTML = '';
-                    showToast(error.message);
-                }
-            }
+            'profile': () => {},
+            'admin': () => {}
         };
         const renderCourseCard = (course, container, showSaveBtn) => {
-            const isSaved = state.token && mockDb.savedCourses.some(c => c.course_title === course.title);
             let saveButtonHtml = '';
-            if (showSaveBtn && state.token) {
-                if (isSaved) {
-                     saveButtonHtml = '<button class="btn btn-primary" style="margin-top: 2rem; width: 100%;" disabled>✓ Saved</button>';
-                } else {
-                     saveButtonHtml = '<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>';
-                }
+            if (showSaveBtn) {
+                saveButtonHtml = '<button class="btn btn-primary" onclick="showToast(\'This is a demo. Saving is not functional.\', \'warning\')" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>';
             }
-
             container.innerHTML = `<div class="course-card"><div class="course-header"><h3>${course.title}</h3><p>${course.description}</p></div><div class="course-stats"><div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${course.startingSalary}</span></div><div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${course.duration}</span></div><div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${course.difficulty}</span></div></div><div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${course.skills.map(skill => `<li class="skill-tag">${skill}</li>`).join('')}</ul></div><div class="modules-section"><h4>Course Modules</h4><div class="module-list">${course.modules.map(module => `<div class="module-item"><h5>${module.title}</h5><p>${module.description}</p></div>`).join('')}</div></div>${saveButtonHtml}</div>`;
-            
-            if (showSaveBtn && state.token && !isSaved) {
-                document.getElementById('save-course-btn').onclick = async (e) => {
-                    e.target.disabled = true;
-                    e.target.textContent = 'Saving...';
-                    try {
-                        await apiRequest('/saved-courses', 'POST', { courseData: course });
-                        showToast('Course saved successfully!', 'success');
-                        e.target.textContent = '✓ Saved';
-                    } catch (error) {
-                        showToast(error.message);
-                        e.target.disabled = false;
-                        e.target.textContent = '💾 Save This Course';
-                    }
-                };
-            }
         };
         const renderCareerPath = (data, container) => {
             const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
-            data.flowchart.roles.forEach(role => { if (stages[role.stage]) { stages[role.stage].push(role); } });
+            if(data.flowchart && data.flowchart.roles) {
+                data.flowchart.roles.forEach(role => { if (stages[role.stage]) { stages[role.stage].push(role); } });
+            }
             container.innerHTML = `<div class="career-path-container"><div class="path-header"><h2>${data.title}</h2><p>${data.description}</p></div><div class="career-stages">${Object.entries(stages).map(([stageName, roles]) => `<div class="career-stage ${stageName.toLowerCase().replace(' ', '')}"><div class="stage-header"><h3>${stageName}</h3></div>${roles.map(role => `<div class="role-card"><div class="role-title">${role.title}</div><div class="role-salary">${role.salary}</div></div>`).join('')}</div>`).join('')}</div></div>`;
-        };
-        const renderAdminTable = (users, container) => {
-            container.innerHTML = `<div class="content-box" style="padding: 0; overflow-x: auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.full_name}</td><td>${user.email}</td><td><span style="text-transform: capitalize;">${user.role}</span></td><td>${new Date(user.created_at).toLocaleDateString()}</td><td>${user.id !== state.userId ? `<button class="delete-btn" data-id="${user.id}">Delete</button>` : '<span style="color: var(--text-light);">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
-            container.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.onclick = () => {
-                    showModal('Delete User?', 'This action cannot be undone. All user data will be permanently deleted.', async () => {
-                        try {
-                            await apiRequest(`/users/${btn.dataset.id}`, 'DELETE');
-                            showToast('User deleted successfully', 'success');
-                            viewInitializers['admin']();
-                        } catch (error) { showToast(error.message); }
-                    });
-                };
-            });
         };
         document.getElementById('mobile-menu-btn').addEventListener('click', () => { document.getElementById('nav-links').classList.toggle('active'); });
         window.addEventListener('scroll', () => {
@@ -719,4 +532,3 @@
     </script>
 </body>
 </html>
-
