@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course2Career</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #22c55e;
+            --primary-hover: #16a34a;
+            --accent-color: #3B82F6;
+            --header-bg: #f8fafc;
+            --text-primary: #111827;
+            --text-secondary: #374151;
+            --text-light: #6B7280;
+            --bg-color: #F0F4F8;
+            --bg-alt: #FFFFFF;
+            --border-color: #E5E7EB;
+            --border-focus: #93C5FD;
+            --danger-color: #EF4444;
+            --success-color: #22C55E;
+            --font-family: 'Plus Jakarta Sans', sans-serif;
+            --radius: 1rem;
+            --shadow: 0 4px 24px 0 rgba(34, 197, 94, 0.08);
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: var(--font-family); margin: 0; background-color: var(--bg-color); color: var(--text-primary); display: flex; flex-direction: column; min-height: 100vh; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        main { flex-grow: 1; }
+        .view-section { display: none; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+        button, .button { cursor: pointer; transition: all 0.2s ease-in-out; border: none; font-family: var(--font-family); }
+        h1, h2, h3 { font-weight: 700; }
+        p { color: var(--text-secondary); line-height: 1.65; }
+        a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        a:hover { color: var(--primary-hover); }
+        header { background-color: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 1rem 0; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        .header-logo {
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+        nav#nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        nav#nav-links a {
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        nav#nav-links a:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        nav#nav-links a.active {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+        footer { text-align: center; padding: 2.5rem; font-size: 0.9rem; color: var(--text-light); border-top: 1px solid var(--border-color); margin-top: 4rem; }
+        .auth-wrapper { display: flex; flex-grow: 1; align-items: center; justify-content: center; padding: 2rem 1rem; }
+        .auth-card { background-color: var(--bg-alt); border: 1px solid var(--border-color); padding: 3rem; border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 450px; text-align: center; }
+        .auth-card {
+            background-color: var(--bg-alt);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .auth-card h1 { font-size: 2.25rem; margin: 0 0 0.75rem 0; }
+        .auth-card p { margin: 0 0 2.5rem 0; color: var(--text-light); }
+        .form-group { text-align: left; margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 1rem; background-color: var(--bg-color); }
+        .form-group input:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .auth-button { width: 100%; padding: 0.9rem 1.5rem; background: var(--primary-color); color: #ffffff; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; margin-top: 1rem; }
+        .auth-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 7px 18px rgba(34, 197, 94, 0.15);
+        }
+        .auth-footer { margin-top: 2rem; font-size: 0.9rem; color: var(--text-light); }
+        .page-header { margin-bottom: 2.5rem; }
+        .content-box { background-color: var(--bg-alt); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        .content-box {
+            background-color: var(--bg-alt);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        .ai-form { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .ai-form input { flex-grow: 1; background-color: var(--bg-alt); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.85rem 1rem; font-size: 1rem; color: var(--text-primary); }
+        .ai-form button { background-color: var(--primary-color); color: #fff; padding: 0.85rem 1.5rem; border-radius: 0.5rem; font-weight: 600; }
+        .ai-result-container { margin-top: 2.5rem; }
+        .loader-text { text-align: center; padding: 3rem 0; color: var(--text-light); font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.75rem; }
+        .ai-course-card { background: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 2.5rem; opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .course-header h3 { margin: 0 0 0.5rem 0; font-size: 2rem; }
+        .course-header p { margin-bottom: 2rem; font-size: 1.1rem; color: var(--text-secondary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2rem 0; padding: 1.5rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .stat-item { text-align: center; }
+        .stat-item strong { display: block; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.35rem; font-weight: 600; }
+        .stat-item span { font-size: 1.1rem; font-weight: 600; }
+        .skills-section h4, .modules-section h4 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0; list-style: none; margin: 0 0 2rem 0; }
+        .skill-tag { background-color: #DBEAFE; color: #1E40AF; padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.9rem; font-weight: 500; border: 1px solid #BFDBFE; }
+        .module-item { background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem 1.5rem; margin-bottom: 1rem; }
+        .module-item strong { display: block; font-size: 1rem; }
+        .module-item p { margin: 0.25rem 0 0 0; color: var(--text-light); }
+        .card-actions { margin-top: 2rem; }
+        .card-actions button { background-color: var(--primary-color); color: #fff; padding: 0.7rem 1.5rem; border-radius: 0.5rem; font-weight: 600; }
+        .card-actions button:disabled { background-color: #D1D5DB; color: #6B7280; cursor: not-allowed; }
+        .career-path { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem 4rem; position: relative; }
+        .path-stage { padding: 1.5rem; border-top: 3px solid; }
+        .path-stage h3 { font-size: 1.25rem; margin: 0 0 1.5rem 0; text-align: center; }
+        .entry-level { border-color: #FBBF24; }
+        .mid-career { border-color: #34D399; }
+        .late-career { border-color: #818CF8; }
+        .role-card { background-color: var(--bg-alt); padding: 1rem 1.25rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .role-title { font-weight: 600; }
+        .role-salary { color: var(--text-light); font-size: 0.9rem; }
+        .saved-courses-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2.5rem; align-items: flex-start; }
+        .saved-courses-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .saved-course-item { display: block; width: 100%; text-align: left; padding: 1rem 1.25rem; background-color: var(--bg-alt); border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 1rem; font-weight: 500; }
+        .saved-course-item.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .saved-course-item:not(.active):hover { border-color: #9CA3AF; }
+        #saved-course-display { min-height: 400px; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { text-align: left; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); }
+        .data-table th { font-weight: 600; color: var(--text-light); font-size: 0.8rem; text-transform: uppercase; }
+        .data-table tr:hover { background-color: #F9FAFB; }
+        .delete-btn { background-color: #FEF2F2; color: var(--danger-color); padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.8rem; border: 1px solid #FEE2E2; }
+        #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast { padding: 1rem 1.5rem; border-radius: var(--radius); color: #fff; font-weight: 500; box-shadow: 0 5px 15px rgba(0,0,0,0.2); opacity: 0; transform: translateY(100%); animation: slideUp 0.3s forwards; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        .toast.error { background-color: var(--danger-color); }
+        .toast.success { background-color: var(--success-color); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background-color: var(--bg-alt); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); width: 90%; max-width: 450px; text-align: center; transform: scale(0.9); transition: transform 0.3s ease; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+        .modal-btn { padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 600; }
+        .modal-btn.confirm { background-color: var(--danger-color); color: white; }
+        .modal-btn.cancel { background-color: #F3F4F6; color: var(--text-secondary); }
+        .info-section { padding: 6rem 0; text-align: center; }
+        .info-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 800;
+        }
+        .info-section .lead {
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; text-align: left; }
+        .info-card { background-color: var(--bg-alt); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s ease-out forwards; }
+        .info-card {
+            background-color: var(--bg-alt);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+            transition: box-shadow 0.2s;
+        }
+        .info-card:hover {
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.18);
+        }
+        .info-card:nth-child(2) { animation-delay: 0.2s; }
+        .info-card:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .info-card h3 { font-size: 1.25rem; margin-top: 1rem; }
+        .info-card-icon { background-color: var(--primary-color); color: white; width: 50px; height: 50px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .info-card-icon svg { width: 24px; height: 24px; }
+        .step-card { position: relative; padding-left: 3.5rem; }
+        .step-number { position: absolute; left: 0; top: -0.5rem; font-size: 3rem; font-weight: 800; color: var(--border-color); }
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 1rem; }
+            .info-grid, .career-path { grid-template-columns: 1fr; }
+            .saved-courses-layout { grid-template-columns: 1fr; }
+            .auth-card { padding: 2rem; }
+            .ai-form { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="confirm-title">Are you sure?</h3>
+            <p id="confirm-message">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="confirm-cancel-btn" class="modal-btn cancel">Cancel</button>
+                <button id="confirm-ok-btn" class="modal-btn confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container header-content">
+            <a href="/" class="header-logo">Course2Career</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="view-landing" class="view-section">
+            <div class="container" style="text-align: center; padding: 6rem 1.5rem 0;">
+                <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.2;">Navigate Your Career Path with Confidence.</h1>
+                <p style="font-size: 1.25rem; max-width: 650px; margin: 1.5rem auto;">Generate personalized learning roadmaps and visualize your professional journey, all powered by AI.</p>
+                <a href="#signup" class="auth-button" style="display: inline-block; width: auto; margin-top: 2rem;">Get Started for Free</a>
+            </div>
+
+            <div class="info-section">
+                <div class="container">
+                    <h2>Our Features</h2>
+                    <p class="lead">Everything you need to plan your professional growth and land your dream job.</p>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.456-2.456L12.5 18l1.178-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.178a3.375 3.375 0 002.456 2.456L20.5 18l-1.178.398a3.375 3.375 0 00-2.456 2.456z" /></svg></div>
+                            <h3>AI Course Generation</h3>
+                            <p>Describe your goal, and our AI will instantly create a comprehensive course outline with modules, skills, and even salary estimates.</p>
+                        </div>
+                        <div class="info-card">
+                             <div class="info-card-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM21 21l-5.197-5.197" /></svg></div>
+                            <h3>Career Path Visualization</h3>
+                            <p>See the bigger picture. Our visualizer maps out typical career progressions in your chosen field, showing roles from entry-level to senior.</p>
+                        </div>
+                        <div class="info-card">
+                             <div class="info-card-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.5 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /></svg></div>
+                            <h3>Save & Track Progress</h3>
+                            <p>Keep track of all your generated courses. Save your favorites to your personal dashboard to review and follow anytime you want.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section" style="background-color: var(--bg-alt);">
+                <div class="container">
+                    <h2>How It Works</h2>
+                     <p class="lead">Get your personalized career roadmap in three simple, intuitive steps.</p>
+                    <div class="info-grid">
+                        <div class="info-card step-card">
+                            <div class="step-number">01</div>
+                            <h3>Define Your Goal</h3>
+                            <p>Start by telling our AI what you want to achieve. It can be anything from "learn Python for data analysis" to "become a marketing manager."</p>
+                        </div>
+                        <div class="info-card step-card">
+                            <div class="step-number">02</div>
+                            <h3>Generate Your Path</h3>
+                            <p>With a single click, our AI analyzes your goal and constructs a detailed, step-by-step learning course or a visual career flowchart.</p>
+                        </div>
+                        <div class="info-card step-card">
+                            <div class="step-number">03</div>
+                            <h3>Save and Execute</h3>
+                            <p>Review the generated plan, save it to your dashboard, and start learning. You now have a clear roadmap to guide your professional journey.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="view-login" class="view-section auth-wrapper">
+            <div class="auth-card">
+                <h1>Welcome Back</h1>
+                <p>Please enter your details to sign in.</p>
+                <form id="login-form">
+                    <div class="form-group"><label for="login-email">Email Address</label><input type="email" id="login-email" name="email" required></div>
+                    <div class="form-group"><label for="login-password">Password</label><input type="password" id="login-password" name="password" required></div>
+                    <button type="submit" class="auth-button">Sign In</button>
+                </form>
+                <div class="auth-footer"><p>Don't have an account? <a href="#signup">Sign Up</a></p></div>
+            </div>
+        </section>
+
+        <section id="view-signup" class="view-section auth-wrapper">
+            <div class="auth-card">
+                <h1>Create an Account</h1>
+                <p>Start your journey with Course2Career today.</p>
+                <form id="signup-form">
+                    <div class="form-group"><label for="signup-fullName">Full Name</label><input type="text" id="signup-fullName" name="fullName" required></div>
+                    <div class="form-group"><label for="signup-email">Email Address</label><input type="email" id="signup-email" name="email" required></div>
+                    <div class="form-group"><label for="signup-password">Password</label><input type="password" id="signup-password" name="password" required></div>
+                    <button type="submit" class="auth-button">Create Account</button>
+                </form>
+                <div class="auth-footer"><p>Already have an account? <a href="#login">Sign In</a></p></div>
+            </div>
+        </section>
+        
+        <section id="view-dashboard" class="view-section" style="padding: 4rem 0;">
+            <div class="container">
+                <div class="content-box">
+                    <h1>AI Course Generator</h1>
+                    <p>Describe any skill or career goal, and let our AI craft the perfect learning path for you in seconds.</p>
+                    <form id="ai-course-form" class="ai-form"><input type="text" id="ai-course-query" placeholder="e.g., 'Become a product manager'" required><button type="submit">✨ Generate Course</button></form>
+                    <div id="ai-course-result-container" class="ai-result-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-career-path" class="view-section" style="padding: 4rem 0;">
+             <div class="container">
+                <div class="content-box">
+                    <h1>AI Career Path Visualizer</h1>
+                    <p>Enter a career field, and our AI will generate a visual flowchart of the typical progression, roles, and salaries.</p>
+                    <form id="ai-path-form" class="ai-form"><input type="text" id="ai-path-query" placeholder="e.g., 'Software Engineering'" required><button type="submit">Visualize Path</button></form>
+                    <div id="ai-path-result-container" class="ai-result-container"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="view-saved-courses" class="view-section" style="padding: 4rem 0;">
+            <div class="container">
+                <div class="page-header"><h1>My Saved Courses</h1><p>Select a course from your list to view its details.</p></div>
+                <div id="saved-courses-content" class="saved-courses-layout"></div>
+            </div>
+        </section>
+        
+        <section id="view-profile" class="view-section" style="padding: 4rem 0;">
+            <div class="container" style="max-width: 700px;">
+                <div class="page-header"><h1>My Profile</h1><p>Update your personal information below.</p></div>
+                <div class="content-box">
+                    <form id="profile-form">
+                        <div class="form-group"><label for="profile-fullName">Full Name</label><input type="text" id="profile-fullName" required></div>
+                        <div class="form-group"><label for="profile-email">Email Address</label><input type="email" id="profile-email" required></div>
+                        <button type="submit" class="auth-button" style="width: auto;">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-admin" class="view-section" style="padding: 4rem 0;">
+            <div class="container">
+                <div class="page-header"><h1>User Management</h1><p>Manage all registered users in the system.</p></div>
+                <div id="admin-user-table-container" class="ai-result-container content-box" style="padding:0;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container"><p>&copy; 2025 Course2Career. All Rights Reserved.</p></div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const state = { token: localStorage.getItem('authToken'), userId: localStorage.getItem('userId'), role: localStorage.getItem('userRole'), savedCoursesCache: [] };
+        const showToast = (message, type = 'error') => {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        };
+        const showConfirm = (title, message, onConfirm) => {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('visible');
+            document.getElementById('confirm-ok-btn').onclick = () => { onConfirm(); modal.classList.remove('visible'); };
+            document.getElementById('confirm-cancel-btn').onclick = () => modal.classList.remove('visible');
+        };
+        const apiRequest = async (endpoint, method = 'GET', body = null) => {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (state.token) options.headers['Authorization'] = `Bearer ${state.token}`;
+            if (body) options.body = JSON.stringify(body);
+            const response = await fetch(`/api${endpoint}`, options);
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+            return data;
+        };
+        const logout = () => { localStorage.clear(); window.location.replace('/#login'); };
+        const updateNav = () => {
+            let links = state.token ? `<a href="#dashboard">Dashboard</a><a href="#career-path">Career Paths</a><a href="#saved-courses">Saved</a><a href="#profile">Profile</a>${state.role === 'admin' ? '<a href="#admin">Admin</a>' : ''}<a href="#" id="logout-btn">Logout</a>` : `<a href="#login">Sign In</a><a href="#signup" class="button">Sign Up</a>`;
+            document.getElementById('nav-links').innerHTML = links;
+            if(state.token) document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); logout(); });
+        };
+        const showView = (viewId) => {
+            document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
+            document.getElementById(viewId).style.display = 'block';
+            window.viewInitializers[viewId]?.();
+        };
+        const router = () => {
+            updateNav();
+            const path = window.location.hash.slice(1) || 'landing';
+            const protectedRoutes = ['dashboard', 'career-path', 'saved-courses', 'profile', 'admin'];
+            if (protectedRoutes.includes(path) && !state.token) return window.location.hash = '#login';
+            if ((path === 'login' || path === 'signup') && state.token) return window.location.hash = '#dashboard';
+            showView(`view-${path}`);
+        };
+        window.viewInitializers = {
+            'view-login': () => initAuthForm('login-form', '/login', data => { Object.assign(state, data); localStorage.setItem('authToken', data.token); localStorage.setItem('userId', data.userId); localStorage.setItem('userRole', data.role); window.location.hash = '#dashboard'; }),
+            'view-signup': () => initAuthForm('signup-form', '/signup', () => { showToast('Success! Please sign in.', 'success'); window.location.hash = '#login'; }),
+            'view-dashboard': initDashboardView, 'view-career-path': initCareerPathView, 'view-saved-courses': initSavedCoursesView, 'view-profile': initProfileView, 'view-admin': initAdminView,
+        };
+        function initAuthForm(formId, endpoint, onSuccess) {
+            document.getElementById(formId).onsubmit = async e => { e.preventDefault(); try { const data = await apiRequest(endpoint, 'POST', Object.fromEntries(new FormData(e.target))); onSuccess(data); } catch (error) { showToast(error.message); } };
+        }
+        function initDashboardView() {
+            document.getElementById('ai-course-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const resultContainer = document.getElementById('ai-course-result-container');
+                resultContainer.innerHTML = 'Generating course...';
+                try {
+                    const courseData = await apiRequest('/generate-course-with-ai', 'POST', { query: document.getElementById('ai-course-query').value });
+                    renderCourseCard(courseData, resultContainer, true);
+                } catch (error) { resultContainer.innerHTML = ''; showToast(error.message); }
+            };
+        }
+        function renderCourseCard(course, container, showSaveButton = false) {
+            container.innerHTML = `<div class="ai-course-card"><h3>${course.title}</h3><p>${course.description}</p><div class="stats-grid"><div><strong>Salary</strong><span>${course.startingSalary}</span></div><div><strong>Duration</strong><span>${course.duration}</span></div><div><strong>Difficulty</strong><span>${course.difficulty}</span></div></div><h4>Skills</h4><ul class="skills-list">${course.skills.map(s => `<li>${s}</li>`).join('')}</ul><h4>Modules</h4>${course.modules.map(m => `<div><strong>${m.title}</strong><p>${m.description}</p></div>`).join('')}${showSaveButton ? '<button id="save-course-btn">Save</button>' : ''}</div>`;
+            if (showSaveButton) document.getElementById('save-course-btn').onclick = async e => { e.target.disabled = true; try { await apiRequest('/saved-courses', 'POST', { courseData: course }); showToast('Saved!', 'success'); } catch (error) { e.target.disabled = false; showToast(error.message); } };
+        }
+        function initCareerPathView() {
+            document.getElementById('ai-path-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const resultContainer = document.getElementById('ai-path-result-container');
+                resultContainer.innerHTML = 'Generating path...';
+                try {
+                    const pathData = await apiRequest('/generate-career-path', 'POST', { query: document.getElementById('ai-path-query').value });
+                    renderCareerPath(pathData, resultContainer);
+                } catch (error) { resultContainer.innerHTML = ''; showToast(error.message); }
+            };
+        }
+        function renderCareerPath(data, container) {
+            const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
+            data.flowchart.roles.forEach(role => stages[role.stage]?.push(role));
+            container.innerHTML = `<h2>${data.title}</h2><p>${data.description}</p><div class="career-path">${Object.entries(stages).map(([stageName, roles]) => `<div class="${stageName.toLowerCase().replace(' ', '-')}"><h3>${stageName}</h3>${roles.map(role => `<div><h4>${role.title}</h4><p>${role.salary}</p></div>`).join('')}</div>`).join('')}</div>`;
+        }
+        async function initSavedCoursesView() {
+            const container = document.getElementById('saved-courses-content');
+            container.innerHTML = 'Loading...';
+            try {
+                const courses = await apiRequest('/saved-courses');
+                state.savedCoursesCache = courses;
+                if (courses.length === 0) { container.innerHTML = 'No saved courses.'; return; }
+                container.innerHTML = `<div class="saved-courses-list">${courses.map(c => `<button data-id="${c.id}">${c.course_title}</button>`).join('')}</div><div id="saved-course-display"></div>`;
+                container.querySelectorAll('button').forEach(btn => btn.onclick = () => renderCourseCard(JSON.parse(state.savedCoursesCache.find(c => c.id == btn.dataset.id).course_data), document.getElementById('saved-course-display')));
+            } catch (error) { container.innerHTML = ''; showToast(error.message); }
+        }
+        async function initProfileView() {
+            try {
+                const user = await apiRequest('/profile');
+                document.getElementById('profile-fullName').value = user.full_name;
+                document.getElementById('profile-email').value = user.email;
+            } catch (error) { showToast('Could not load profile.'); }
+            document.getElementById('profile-form').onsubmit = async e => { e.preventDefault(); try { const result = await apiRequest('/profile', 'PUT', { fullName: document.getElementById('profile-fullName').value, email: document.getElementById('profile-email').value }); showToast(result.message, 'success'); } catch(error) { showToast(error.message); } };
+        }
+        async function initAdminView() {
+            const container = document.getElementById('admin-user-table-container');
+            container.innerHTML = 'Loading...';
+            try {
+                const users = await apiRequest('/users');
+                renderUserTable(users, container);
+            } catch (error) { container.innerHTML = ''; showToast(error.message); }
+        }
+        function renderUserTable(users, container) {
+            container.innerHTML = `<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Action</th></tr></thead><tbody>${users.map(user => `<tr><td>${user.full_name}</td><td>${user.email}</td><td>${user.role}</td><td>${new Date(user.created_at).toLocaleDateString()}</td><td>${user.id != state.userId ? `<button class="delete-btn" data-id="${user.id}">Delete</button>` : ''}</td></tr>`).join('')}</tbody></table>`;
+            container.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => showConfirm('Delete User?', 'This is permanent.', async () => { try { await apiRequest(`/users/${btn.dataset.id}`, 'DELETE'); showToast('User deleted.', 'success'); initAdminView(); } catch (error) { showToast(error.message); } }));
+        }
+        window.addEventListener('hashchange', router);
+        router();
+    });
+    </script>
+</body>
+</html>
