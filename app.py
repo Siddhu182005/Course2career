@@ -18,7 +18,7 @@ bcrypt = Bcrypt(app)
 app.config['SECRET_KEY'] = os.environ.get('JWT_SECRET')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 SQLITECLOUD_CONNECTION = os.environ.get("SQLITECLOUD_CONNECTION_STRING")
-AI_MODEL = 'gemini-1.5-flash-latest'
+AI_MODEL = 'gemini-1.5-flash'
 
 if not app.config['SECRET_KEY']:
     raise ValueError("FATAL ERROR: JWT_SECRET environment variable is not set.")
