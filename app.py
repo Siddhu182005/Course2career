@@ -8,7 +8,7 @@ import jwt
 import sqlitecloud as sq
 from flask import Flask, request, jsonify, g, render_template
 from flask_bcrypt import Bcrypt
-from deepseek import DeepSeekClient
+from openai import OpenAI
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ if not DEEPSEEK_API_KEY:
 if not SQLITECLOUD_CONNECTION:
     raise ValueError("FATAL ERROR: SQLITECLOUD_CONNECTION_STRING environment variable is not set.")
 
-deepseek_client = DeepSeekClient(api_key=DEEPSEEK_API_KEY)
+client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
 def get_db():
     if 'db' not in g:
@@ -113,7 +113,7 @@ def authenticate_admin(f):
 
 def generate_ai_content(prompt):
     try:
-        response = deepseek_client.chat.completions.create(
+        response = client.chat.completions.create(
             model=AI_MODEL,
             messages=[
                 {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."},
