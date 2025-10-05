@@ -8,7 +8,7 @@ import jwt
 import sqlitecloud as sq
 from flask import Flask, request, jsonify, g, render_template
 from flask_bcrypt import Bcrypt
-from openai import OpenAI
+import requests
 
 load_dotenv()
 
@@ -16,18 +16,19 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = os.environ.get('JWT_SECRET')
-DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY')
+# --- OpenRouter Configuration ---
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY')
+AI_MODEL = 'nousresearch/deephermes-3-llama-3-8b-preview:free'
+# --- End of OpenRouter Configuration ---
+
 SQLITECLOUD_CONNECTION = os.environ.get("SQLITECLOUD_CONNECTION_STRING")
-AI_MODEL = 'deepseek-chat'
 
 if not app.config['SECRET_KEY']:
     raise ValueError("FATAL ERROR: JWT_SECRET environment variable is not set.")
-if not DEEPSEEK_API_KEY:
-    raise ValueError("FATAL ERROR: DEEPSEEK_API_KEY environment variable is not set.")
+if not OPENROUTER_API_KEY:
+    raise ValueError("FATAL ERROR: OPENROUTER_API_KEY environment variable is not set.")
 if not SQLITECLOUD_CONNECTION:
     raise ValueError("FATAL ERROR: SQLITECLOUD_CONNECTION_STRING environment variable is not set.")
-
-client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
 def get_db():
     if 'db' not in g:
@@ -111,18 +112,28 @@ def authenticate_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def generate_ai_content(prompt):
+# Updated function to use the OpenRouter API
+def generate_ai_content(prompt, model=AI_MODEL):
     try:
-        response = client.chat.completions.create(
-            model=AI_MODEL,
-            messages=[
-                {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"}
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            data=json.dumps({
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."},
+                    {"role": "user", "content": prompt}
+                ],
+            })
         )
         
-        response_text = response.choices[0].message.content
+        response.raise_for_status()
+        
+        response_data = response.json()
+        response_text = response_data['choices'][0]['message']['content']
         
         cleaned_text = re.sub(
             r'^```json\s*|\s*```\s*$', 
@@ -133,6 +144,10 @@ def generate_ai_content(prompt):
         
         data = json.loads(cleaned_text)
         return data, None
+        
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP Error: {e}")
+        return None, ({"error": f"API request failed with status code {e.response.status_code}"}, e.response.status_code)
     except json.JSONDecodeError as e:
         print(f"JSON Decode Error: {e}")
         print(f"Response text: {response_text if 'response_text' in locals() else 'No response'}")
