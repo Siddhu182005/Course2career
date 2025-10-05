@@ -113,21 +113,21 @@ def authenticate_admin(f):
     return decorated_function
 
 # Updated function to use the OpenRouter API
-def generate_ai_content(prompt, model=AI_MODEL):
+def generate_ai_content(prompt, model=AI_MODEL, is_json_response=True):
     try:
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+        if is_json_response:
+             messages.insert(0, {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."})
+        
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
             },
-            data=json.dumps({
-                "model": model,
-                "messages": [
-                    {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."},
-                    {"role": "user", "content": prompt}
-                ],
-            })
+            data=json.dumps({ "model": model, "messages": messages })
         )
         
         response.raise_for_status()
@@ -135,16 +135,18 @@ def generate_ai_content(prompt, model=AI_MODEL):
         response_data = response.json()
         response_text = response_data['choices'][0]['message']['content']
         
-        cleaned_text = re.sub(
-            r'^```json\s*|\s*```\s*$', 
-            '', 
-            response_text, 
-            flags=re.MULTILINE | re.DOTALL
-        ).strip()
+        if is_json_response:
+            cleaned_text = re.sub(
+                r'^```json\s*|\s*```\s*$', 
+                '', 
+                response_text, 
+                flags=re.MULTILINE | re.DOTALL
+            ).strip()
+            data = json.loads(cleaned_text)
+            return data, None
         
-        data = json.loads(cleaned_text)
-        return data, None
-        
+        return response_text, None
+
     except requests.exceptions.HTTPError as e:
         print(f"HTTP Error: {e}")
         return None, ({"error": f"API request failed with status code {e.response.status_code}"}, e.response.status_code)
@@ -477,6 +479,32 @@ Important:
     except Exception as e:
         print(f"Generate Career Path Error: {str(e)}")
         return jsonify({"error": "Could not generate career path."}), 500
+
+@app.route('/api/chatbot', methods=['POST'])
+@authenticate_token
+def chatbot():
+    try:
+        data = request.get_json()
+        if not data or 'query' not in data:
+            return jsonify({"error": "Query is required."}), 400
+        
+        user_query = data.get('query')
+        prompt = f"""
+You are a helpful AI assistant named Course2Career Assistant. 
+A user has asked: "{user_query}". 
+Provide a concise, helpful, and well-formatted answer. You can use markdown for formatting if needed.
+"""
+        
+        response_text, error = generate_ai_content(prompt, is_json_response=False)
+        
+        if error:
+            return jsonify(error[0]), error[1]
+            
+        return jsonify({"response": response_text}), 200
+
+    except Exception as e:
+        print(f"Chatbot Error: {str(e)}")
+        return jsonify({"error": "An error occurred in the chatbot."}), 500
 
 @app.route('/api/users', methods=['GET'])
 @authenticate_admin
