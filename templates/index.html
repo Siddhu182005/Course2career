@@ -660,35 +660,34 @@
         };
 
         const renderCourseCard = (course, container, showSaveBtn) => {
-            const courseData = (typeof course.course_data === 'string') ? JSON.parse(course.course_data) : course;
-            let saveButtonHtml = '';
-            if (showSaveBtn) {
-                saveButtonHtml = `<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>`;
-            }
-            container.innerHTML = `<div class="course-card">
-                <div class="course-header"><h3>${courseData.title}</h3><p>${courseData.description}</p></div>
-                <div class="course-stats">
-                    <div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${courseData.startingSalary}</span></div>
-                    <div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${courseData.duration}</span></div>
-                    <div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${courseData.difficulty}</span></div>
-                </div>
-                <div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${courseData.skills.map(skill => `<li class="skill-tag">${skill}</li>`).join('')}</ul></div>
-                <div class="modules-section"><h4>Course Modules</h4><div class="module-list">${courseData.modules.map(module => `<div class="module-item"><h5>${module.title}</h5><p>${module.description}</p></div>`).join('')}</div></div>
-                ${saveButtonHtml}
-            </div>`;
+    const courseData = (typeof course.course_data === 'string') ? JSON.parse(course.course_data) : course;
+    let saveButtonHtml = '';
+    if (showSaveBtn) {
+        saveButtonHtml = `<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem; width: 100%;">💾 Save This Course</button>`;
+    }
+    container.innerHTML = `<div class="course-card">
+        <div class="course-header"><h3>${courseData.title}</h3><p>${courseData.description}</p></div>
+        <div class="course-stats">
+            <div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${courseData.startingSalary}</span></div>
+            <div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${courseData.duration}</span></div>
+            <div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${courseData.difficulty}</span></div>
+        </div>
+        <div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${courseData.skills.map(skill => `<li class="skill-tag" onclick="navigateToCourseSearch('${skill}')" style="cursor: pointer;">${skill}</li>`).join('')}</ul></div>
+        <div class="modules-section"><h4>Course Modules</h4><div class="module-list">${courseData.modules.map(module => `<div class="module-item" onclick="navigateToCourseSearch('${module.title}')" style="cursor: pointer;"><h5>${module.title}</h5><p>${module.description}</p></div>`).join('')}</div></div>
+        ${saveButtonHtml}
+    </div>`;
 
-            if (showSaveBtn) {
-                document.getElementById('save-course-btn').onclick = async () => {
-                    try {
-                        await apiRequest('/saved-courses', 'POST', { courseData: state.currentCourse });
-                        showToast('Course saved successfully!', 'success');
-                    } catch (error) {
-                        console.error('Failed to save course:', error);
-                    }
-                };
+    if (showSaveBtn) {
+        document.getElementById('save-course-btn').onclick = async () => {
+            try {
+                await apiRequest('/saved-courses', 'POST', { courseData: state.currentCourse });
+                showToast('Course saved successfully!', 'success');
+            } catch (error) {
+                console.error('Failed to save course:', error);
             }
         };
-
+    }
+};
        const renderCareerPath = (data, container) => {
     const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
     if (data.flowchart && data.flowchart.roles) {
