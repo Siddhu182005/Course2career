@@ -5,4 +5,4 @@ pyjwt
 requests
 sqlitecloud
 gunicorn
-deepseek
+openai
