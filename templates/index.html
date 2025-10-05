@@ -17,7 +17,7 @@
         header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
         header.scrolled { box-shadow: var(--shadow-md); }
         .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-        .logo { font-size: 1.5rem; font-weight: 900; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; letter-spacing: -0.5px; }
+        .logo { font-size: 2.25rem; font-weight: 900; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; letter-spacing: -0.5px; }
         .nav-links { display: flex; align-items: center; gap: 0.5rem; }
         .nav-links a { padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; }
         .nav-links a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
@@ -27,10 +27,14 @@
         .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
         .mobile-menu-btn span { display: block; width: 24px; height: 2px; background: var(--text-primary); margin: 5px 0; transition: 0.3s; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
-        .hero { padding: 6rem 1.5rem 4rem; text-align: center; background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%); }
-        .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .hero p { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem; }
-        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .hero { padding: 6rem 1.5rem; text-align: center; background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%); }
+        .hero-container { display: flex; align-items: center; justify-content: center; gap: 4rem; text-align: left; }
+        .hero-content { flex-basis: 55%; }
+        .hero h1 { font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--text-secondary); max-width: 600px; margin-bottom: 2rem; }
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-start; }
+        .hero-image { flex-basis: 45%; max-width: 450px; }
+        .hero-image img { width: 100%; height: auto; border-radius: var(--radius-xl); box-shadow: var(--shadow-2xl); }
         .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; border-radius: var(--radius-lg); font-weight: 600; font-size: 1rem; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
@@ -69,6 +73,7 @@
         .chatbot-response a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .chatbot-response a:hover { text-decoration: underline; }
         .how-it-works-section { padding: 5rem 1.5rem; text-align: center; }
+        .how-it-works-section h2 { font-size: clamp(2.8rem, 5vw, 3.8rem); font-weight: 900; margin-bottom: 1rem; }
         .how-it-works-section .subtitle { max-width: 700px; margin: 0 auto 4rem; color: var(--text-secondary); font-size: 1.1rem; }
         .steps-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 5rem; }
         .step-row { display: flex; align-items: center; gap: 3rem; text-align: left; }
@@ -168,6 +173,11 @@
         footer { background: white; border-top: 1px solid var(--border); padding: 3rem 1.5rem; margin-top: 5rem; }
         .footer-content { max-width: 1280px; margin: 0 auto; text-align: center; }
         .footer-content p { color: var(--text-secondary); }
+        @media (max-width: 992px) {
+            .hero-container { flex-direction: column; text-align: center; }
+            .hero-buttons { justify-content: center; }
+            .hero-image { display: none; }
+        }
         @media (max-width: 768px) {
             .mobile-menu-btn { display: block; }
             .nav-links { position: absolute; top: 100%; left: 0; right: 0; background: white; flex-direction: column; padding: 1rem; border-bottom: 1px solid var(--border); box-shadow: var(--shadow-lg); transform: translateY(-100%); opacity: 0; pointer-events: none; transition: all 0.3s ease; }
@@ -223,12 +233,17 @@
     <main>
         <section id="view-landing" class="view-section">
             <div class="hero">
-                <div class="container">
-                    <h1>Navigate Your Career Path with Confidence</h1>
-                    <p>Generate personalized learning roadmaps and visualize your professional journey, all powered by cutting-edge AI technology.</p>
-                    <div class="hero-buttons">
-                        <a href="#signup" class="btn btn-primary">Get Started Free</a>
-                        <a href="#login" class="btn btn-secondary">Sign In</a>
+                <div class="container hero-container">
+                    <div class="hero-content">
+                        <h1>Navigate Your Career Path with Confidence</h1>
+                        <p>Generate personalized learning roadmaps and visualize your professional journey, all powered by cutting-edge AI technology.</p>
+                        <div class="hero-buttons">
+                            <a href="#signup" class="btn btn-primary">Get Started Free</a>
+                            <a href="#login" class="btn btn-secondary">Sign In</a>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <img src="/static/webiste_iamge.jpg" alt="A smiling student holding books, ready to learn.">
                     </div>
                 </div>
             </div>
