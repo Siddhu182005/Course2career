@@ -682,28 +682,28 @@
         };
 
         const renderCareerPath = (data, container) => {
-            const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
-            if (data.flowchart && data.flowchart.roles) {
-                data.flowchart.roles.forEach(role => {
-                    if (stages[role.stage]) {
-                        stages[role.stage].push(role);
-                    }
-                });
+    const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
+    if (data.flowchart && data.flowchart.roles) {
+        data.flowchart.roles.forEach(role => {
+            if (stages[role.stage]) {
+                stages[role.stage].push(role);
             }
-            container.innerHTML = `<div class="career-path-container">
-                <div class="path-header"><h2>${data.title}</h2><p>${data.description}</p></div>
-                <div class="career-stages">${Object.entries(stages).map(([stageName, roles]) => `
-                    <div class="career-stage ${stageName.toLowerCase().replace(' ', '')}">
-                        <div class="stage-header"><h3>${stageName}</h3></div>
-                        ${roles.map(role => `
-                            <div class="role-card">
-                                <div class="role-title">${role.title}</div>
-                                <div class="role-salary">${role.salary}</div>
-                            </div>`).join('')}
+        });
+    }
+    container.innerHTML = `<div class="career-path-container">
+        <div class="path-header"><h2>${data.title}</h2><p>${data.description}</p></div>
+        <div class="career-stages">${Object.entries(stages).map(([stageName, roles]) => `
+            <div class="career-stage ${stageName.split(' ')[0].toLowerCase()}">
+                <div class="stage-header"><h3>${stageName}</h3></div>
+                ${roles.map(role => `
+                    <div class="role-card">
+                        <div class="role-title">${role.title}</div>
+                        <div class="role-salary">${role.salary}</div>
                     </div>`).join('')}
-                </div>
-            </div>`;
-        };
+            </div>`).join('')}
+        </div>
+    </div>`;
+};
 
         const renderSavedCourses = () => {
             const container = document.getElementById('saved-courses-content');
