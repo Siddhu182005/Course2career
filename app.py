@@ -4,11 +4,11 @@ import re
 from datetime import datetime, timedelta
 from functools import wraps
 from dotenv import load_dotenv
-import google.generativeai as genai
 import jwt
 import sqlitecloud as sq
 from flask import Flask, request, jsonify, g, render_template
 from flask_bcrypt import Bcrypt
+from deepseek import DeepSeekClient
 
 load_dotenv()
 
@@ -16,18 +16,18 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = os.environ.get('JWT_SECRET')
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY')
 SQLITECLOUD_CONNECTION = os.environ.get("SQLITECLOUD_CONNECTION_STRING")
-AI_MODEL = 'gemini-2.0-flash-001'
+AI_MODEL = 'deepseek-chat'
 
 if not app.config['SECRET_KEY']:
     raise ValueError("FATAL ERROR: JWT_SECRET environment variable is not set.")
-if not GEMINI_API_KEY:
-    raise ValueError("FATAL ERROR: GEMINI_API_KEY environment variable is not set.")
+if not DEEPSEEK_API_KEY:
+    raise ValueError("FATAL ERROR: DEEPSEEK_API_KEY environment variable is not set.")
 if not SQLITECLOUD_CONNECTION:
     raise ValueError("FATAL ERROR: SQLITECLOUD_CONNECTION_STRING environment variable is not set.")
 
-genai.configure(api_key=GEMINI_API_KEY)
+deepseek_client = DeepSeekClient(api_key=DEEPSEEK_API_KEY)
 
 def get_db():
     if 'db' not in g:
@@ -113,13 +113,21 @@ def authenticate_admin(f):
 
 def generate_ai_content(prompt):
     try:
-        model = genai.GenerativeModel(AI_MODEL)
-        response = model.generate_content(prompt)
+        response = deepseek_client.chat.completions.create(
+            model=AI_MODEL,
+            messages=[
+                {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+        
+        response_text = response.choices[0].message.content
         
         cleaned_text = re.sub(
             r'^```json\s*|\s*```\s*$', 
             '', 
-            response.text, 
+            response_text, 
             flags=re.MULTILINE | re.DOTALL
         ).strip()
         
@@ -127,7 +135,7 @@ def generate_ai_content(prompt):
         return data, None
     except json.JSONDecodeError as e:
         print(f"JSON Decode Error: {e}")
-        print(f"Response text: {response.text if 'response' in locals() else 'No response'}")
+        print(f"Response text: {response_text if 'response_text' in locals() else 'No response'}")
         return None, ({"error": "The AI returned an unexpected format. Please try again."}, 500)
     except Exception as e:
         print(f"AI Error: {str(e)}")
