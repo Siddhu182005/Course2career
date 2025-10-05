@@ -3,6 +3,6 @@ flask-bcrypt
 python-dotenv
 pyjwt
 requests
-google-generativeai
 sqlitecloud
 gunicorn
+deepseek
