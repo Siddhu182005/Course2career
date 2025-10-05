@@ -364,6 +364,14 @@
             currentCourse: null
         };
 
+        const navigateToCourseSearch = (query) => {
+            const courseInput = document.getElementById('ai-course-query');
+            if (courseInput) {
+                courseInput.value = query;
+            }
+            window.location.hash = '#dashboard';
+        };
+
         const showToast = (message, type = 'error') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -681,7 +689,7 @@
             }
         };
 
-        const renderCareerPath = (data, container) => {
+       const renderCareerPath = (data, container) => {
     const stages = { 'Entry Level': [], 'Mid Career': [], 'Late Career': [] };
     if (data.flowchart && data.flowchart.roles) {
         data.flowchart.roles.forEach(role => {
@@ -696,7 +704,7 @@
             <div class="career-stage ${stageName.split(' ')[0].toLowerCase()}">
                 <div class="stage-header"><h3>${stageName}</h3></div>
                 ${roles.map(role => `
-                    <div class="role-card">
+                    <div class="role-card" onclick="navigateToCourseSearch('${role.title}')" style="cursor: pointer;">
                         <div class="role-title">${role.title}</div>
                         <div class="role-salary">${role.salary}</div>
                     </div>`).join('')}
@@ -704,7 +712,6 @@
         </div>
     </div>`;
 };
-
         const renderSavedCourses = () => {
             const container = document.getElementById('saved-courses-content');
             if (state.savedCourses.length === 0) {
