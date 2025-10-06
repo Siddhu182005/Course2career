@@ -171,9 +171,13 @@ def signup(c):
         full_name = data.get('fullName')
         email = data.get('email')
         password = data.get('password')
+        confirm_password = data.get('confirmPassword')
 
-        if not all([full_name, email, password]):
+        if not all([full_name, email, password, confirm_password]):
             return jsonify({"error": "Missing required fields."}), 400
+
+        if password != confirm_password:
+            return jsonify({"error": "Passwords do not match."}), 400
 
         if '@' not in email or '.' not in email:
             return jsonify({"error": "Invalid email format."}), 400
