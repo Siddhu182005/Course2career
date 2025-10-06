@@ -490,7 +490,8 @@ def chatbot():
             return jsonify({"error": "Query is required."}), 400
         
         user_query = data.get('query')
-       prompt = f"""
+        
+        prompt = f"""
 You are Course2Career Assistant, a friendly and helpful AI guide for the Course2Career website. Your personality is encouraging and clear.
 
 A user has asked: "{user_query}"
