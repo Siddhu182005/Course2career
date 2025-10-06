@@ -110,13 +110,16 @@ def authenticate_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def generate_ai_content(prompt, model=AI_MODEL, is_json_response=True):
+def generate_ai_content(prompt=None, model=AI_MODEL, is_json_response=True, messages=None):
     try:
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
+        if messages is None:
+            if prompt is None:
+                raise ValueError("Either prompt or messages must be provided.")
+            messages = [{"role": "user", "content": prompt}]
+
         if is_json_response:
-             messages.insert(0, {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."})
+            if not any(d.get('role') == 'system' for d in messages):
+                messages.insert(0, {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."})
         
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
@@ -490,11 +493,10 @@ def chatbot():
             return jsonify({"error": "Query is required."}), 400
         
         user_query = data.get('query')
+        history = data.get('history', [])
         
-        prompt = f"""
+        system_prompt = """
 You are Course2Career Assistant, a friendly and helpful AI guide for the Course2Career website. Your personality is encouraging and clear.
-
-A user has asked: "{user_query}"
 
 **Your Primary Goal:**
 First and foremost, always try to connect the user's question to the features available on the Course2Career website. Your main job is to show users how our tools can help them.
@@ -508,7 +510,16 @@ First and foremost, always try to connect the user's question to the features av
 Keep your answer concise, friendly, and focused on helping the user on their career journey.
 """
         
-        response_text, error = generate_ai_content(prompt, is_json_response=False)
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        for turn in history:
+            messages.append({"role": "user", "content": turn['query']})
+            if 'response' in turn:
+                messages.append({"role": "assistant", "content": turn['response']})
+
+        messages.append({"role": "user", "content": user_query})
+
+        response_text, error = generate_ai_content(messages=messages, is_json_response=False)
         
         if error:
             return jsonify(error[0]), error[1]
