@@ -513,9 +513,7 @@ Keep your answer concise, friendly, and focused on helping the user on their car
         messages = [{"role": "system", "content": system_prompt}]
         
         for turn in history:
-            messages.append({"role": "user", "content": turn['query']})
-            if 'response' in turn:
-                messages.append({"role": "assistant", "content": turn['response']})
+            messages.append({"role": turn.get('role'), "content": turn.get('content')})
 
         messages.append({"role": "user", "content": user_query})
 
