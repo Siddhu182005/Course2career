@@ -499,7 +499,64 @@
         const logout=()=>{localStorage.removeItem("authToken"),localStorage.removeItem("userId"),localStorage.removeItem("userRole"),state.token=null,state.userId=null,state.role=null,window.location.hash="#landing",router(),showToast("You have been logged out.","success")};
         const router=()=>{const e=window.location.hash.slice(1)||"landing",t=["login","signup"],o=["profile","saved-courses","admin","course-details"];if(state.token&&t.includes(e))return void(window.location.hash="#course-search");if(!state.token&&o.includes(e))return showToast("You must be logged in to view this page."),void(window.location.hash="#login");document.querySelectorAll(".view-section").forEach(e=>{e.classList.remove("active")});const n=document.getElementById(`view-${e}`);n?(n.classList.add("active"),document.querySelectorAll(".nav-links a").forEach(t=>{t.classList.remove("active"),t.getAttribute("href")===`#${e}`&&t.classList.add("active")}),viewInitializers[e]&&viewInitializers[e]()):document.getElementById("view-landing").classList.add("active"),updateNav()};
         const viewInitializers={
-            landing:()=>{const e=document.getElementById("chatbot-form"),t=document.getElementById("chatbot-response");t.style.display="none",e.onsubmit=async o=>{if(o.preventDefault(),!state.token)return showToast("Please log in to use the chatbot."),void(window.location.hash="#login");const n=e.querySelector('button[type="submit"]'),s=document.getElementById("chatbot-query").value;n.disabled=!0,t.style.display="flex",t.classList.add("loading"),t.innerHTML='<div class="spinner"></div>';try{const a=await apiRequest("/chatbot","POST",{query:s});t.classList.remove("loading"),t.innerHTML=a.response}catch(i){t.classList.remove("loading"),t.innerHTML="<p>Sorry, I couldn't get a response. Please try again.</p>"}finally{n.disabled=!1}}},
+            landing: () => {
+                const chatbotForm = document.getElementById('chatbot-form');
+                const chatbotResponse = document.getElementById('chatbot-response');
+                let conversationHistory = [];
+
+                chatbotResponse.style.display = 'none';
+                chatbotForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    if (!state.token) {
+                        showToast("Please log in to use the chatbot.");
+                        window.location.hash = '#login';
+                        return;
+                    }
+
+                    const submitButton = chatbotForm.querySelector('button[type="submit"]');
+                    const queryInput = document.getElementById('chatbot-query');
+                    const userQuery = queryInput.value;
+                    if (!userQuery) return;
+
+                    const userMessageElem = document.createElement('div');
+                    userMessageElem.innerHTML = `<p><strong>You:</strong> ${userQuery}</p>`;
+                    chatbotResponse.appendChild(userMessageElem);
+                    chatbotResponse.style.display = 'block';
+
+                    conversationHistory.push({ query: userQuery });
+                    submitButton.disabled = true;
+                    queryInput.value = '';
+
+                    const spinnerElem = document.createElement('div');
+                    spinnerElem.className = 'spinner';
+                    chatbotResponse.appendChild(spinnerElem);
+                    chatbotResponse.scrollTop = chatbotResponse.scrollHeight;
+
+                    try {
+                        const response = await apiRequest("/chatbot", "POST", {
+                            query: userQuery,
+                            history: conversationHistory.slice(0, -1)
+                        });
+                        
+                        chatbotResponse.removeChild(spinnerElem);
+                        
+                        const aiMessageElem = document.createElement('div');
+                        aiMessageElem.innerHTML = `<div><strong>AI:</strong> ${response.response}</div>`;
+                        chatbotResponse.appendChild(aiMessageElem);
+                        
+                        conversationHistory[conversationHistory.length - 1].response = response.response;
+                        chatbotResponse.scrollTop = chatbotResponse.scrollHeight;
+
+                    } catch (error) {
+                        chatbotResponse.removeChild(spinnerElem);
+                        const errorElem = document.createElement('p');
+                        errorElem.textContent = "Sorry, I couldn't get a response. Please try again.";
+                        chatbotResponse.appendChild(errorElem);
+                    } finally {
+                        submitButton.disabled = false;
+                    }
+                };
+            },
             login: () => {
                 const loginForm = document.getElementById('login-form');
                 const passwordInput = document.getElementById('login-password');
