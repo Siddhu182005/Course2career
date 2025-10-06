@@ -278,7 +278,7 @@ def generate_course():
     prompt = f"""
         You are an expert course creator who ONLY responds in valid JSON.
         A user wants a detailed course about: "{user_query}".
-        Create a comprehensive course outline with the following JSON structure. Each module must contain 8 chapters, and each chapter must contain 6 pages. The 'content' for each page should be a detailed, educational paragraph.
+        Create a comprehensive course outline with the following JSON structure. Each module must contain 8 chapters, and each chapter must contain at least 4 pages. The 'content' for each page should be a detailed, educational paragraph.
 
         {{
         "title": "Course Title", "description": "Engaging 2-3 sentence description.",
@@ -295,9 +295,70 @@ def generate_course():
                     {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
                     {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
                     {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
-                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
-                    {{"title": "Page 5: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
-                    {{"title": "Page 6: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.2: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.3: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.4: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.5: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.6: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.7: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }},
+                {{
+                "title": "Chapter 1.8: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
                 ]
                 }}
               ]
