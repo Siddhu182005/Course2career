@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course2Career - AI-Powered Learning Paths</title>
+    <title>Course2Career</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -94,6 +94,10 @@
         .form-group input { width: 100%; padding: 0.875rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; transition: all 0.2s ease; background: var(--bg-secondary); }
         .form-group input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
         .auth-footer { margin-top: 2rem; text-align: center; color: var(--text-secondary); }
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .show-password-container { display: flex; align-items: center; margin-top: 0.75rem; }
+        .show-password-container input { margin-right: 0.5rem; width: auto; }
+        .show-password-container label { margin-bottom: 0; font-weight: 500; font-size: 0.875rem; color: var(--text-secondary); }
         .content-section { padding: 4rem 1.5rem; }
         .content-box { background: white; border-radius: var(--radius-xl); padding: 2.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-md); }
         #view-dashboard .content-box { background: linear-gradient(135deg, #f0fdf4, #eef2ff); }
@@ -239,6 +243,7 @@
                         <p>Generate personalized learning roadmaps and visualize your professional journey, all powered by cutting-edge AI technology.</p>
                         <div class="hero-buttons">
                             <a href="#signup" class="btn btn-primary">Get Started Free</a>
+                            <a href="#login" class="btn btn-secondary">Sign In</a>
                         </div>
                     </div>
                     <div class="hero-image">
@@ -340,11 +345,17 @@
                     <form id="login-form">
                         <div class="form-group">
                             <label for="login-email">Email Address</label>
-                            <input type="email" id="login-email" name="email" placeholder=" Enter your email " required>
+                            <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group">
                             <label for="login-password">Password</label>
-                            <input type="password" id="login-password" name="password" placeholder=" Enter your password " required>
+                            <div class="password-wrapper">
+                                <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                            </div>
+                            <div class="show-password-container">
+                                <input type="checkbox" id="login-show-password">
+                                <label for="login-show-password">Show Password</label>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign In</button>
                     </form>
@@ -362,15 +373,27 @@
                     <form id="signup-form">
                         <div class="form-group">
                             <label for="signup-fullName">Full Name</label>
-                            <input type="text" id="signup-fullName" name="fullName" placeholder=" Enter your name " required>
+                            <input type="text" id="signup-fullName" name="fullName" placeholder="Enter your name" required>
                         </div>
                         <div class="form-group">
                             <label for="signup-email">Email Address</label>
-                            <input type="email" id="signup-email" name="email" placeholder=" Enter your email " required>
+                            <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group">
                             <label for="signup-password">Password</label>
-                            <input type="password" id="signup-password" name="password" placeholder="Create a strong password" required>
+                            <div class="password-wrapper">
+                                <input type="password" id="signup-password" name="password" placeholder="Create a strong password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="signup-confirm-password" name="confirmPassword" placeholder="Confirm your password" required>
+                            </div>
+                            <div class="show-password-container">
+                                <input type="checkbox" id="signup-show-password">
+                                <label for="signup-show-password">Show Password</label>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create Account</button>
                     </form>
@@ -384,7 +407,7 @@
             <div class="content-section">
                 <div class="container">
                     <div class="content-box">
-                        <h1>🚀 Course Search</h1>
+                        <h1>🚀 Course Generator</h1>
                         <p>Describe any skill or career goal, and our AI will craft the perfect learning path for you in seconds.</p>
                         <form id="ai-course-form" class="ai-form">
                             <input type="text" id="ai-course-query" placeholder="e.g., 'Become a product manager' or 'Learn web development'" required>
@@ -476,7 +499,76 @@
         const updateNav=()=>{const e=document.getElementById("nav-links");state.token?(e.innerHTML=`\n                    <a href="#dashboard">Dashboard</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#saved-courses">Saved</a>\n                    <a href="#profile">Profile</a>\n                    ${"admin"===state.role?'<a href="#admin">Admin</a>':""}\n                    <a href="#" id="logout-btn" class="btn-primary">Logout</a>\n                `,document.getElementById("logout-btn").addEventListener("click",e=>{e.preventDefault(),logout()})):e.innerHTML='\n                    <a href="#dashboard">Dashboard</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#login">Sign In</a>\n                    <a href="#signup" class="btn-primary">Sign Up</a>\n                '};
         const logout=()=>{localStorage.removeItem("authToken"),localStorage.removeItem("userId"),localStorage.removeItem("userRole"),state.token=null,state.userId=null,state.role=null,window.location.hash="#landing",router(),showToast("You have been logged out.","success")};
         const router=()=>{const e=window.location.hash.slice(1)||"landing",t=["login","signup"],o=["profile","saved-courses","admin","course-details"];if(state.token&&t.includes(e))return void(window.location.hash="#dashboard");if(!state.token&&o.includes(e))return showToast("You must be logged in to view this page."),void(window.location.hash="#login");document.querySelectorAll(".view-section").forEach(e=>{e.classList.remove("active")});const n=document.getElementById(`view-${e}`);n?(n.classList.add("active"),document.querySelectorAll(".nav-links a").forEach(t=>{t.classList.remove("active"),t.getAttribute("href")===`#${e}`&&t.classList.add("active")}),viewInitializers[e]&&viewInitializers[e]()):document.getElementById("view-landing").classList.add("active"),updateNav()};
-        const viewInitializers={landing:()=>{const e=document.getElementById("chatbot-form"),t=document.getElementById("chatbot-response");t.style.display="none",e.onsubmit=async o=>{if(o.preventDefault(),!state.token)return showToast("Please log in to use the chatbot."),void(window.location.hash="#login");const n=e.querySelector('button[type="submit"]'),s=document.getElementById("chatbot-query").value;n.disabled=!0,t.style.display="flex",t.classList.add("loading"),t.innerHTML='<div class="spinner"></div>';try{const a=await apiRequest("/chatbot","POST",{query:s});t.classList.remove("loading"),t.innerHTML=a.response}catch(i){t.classList.remove("loading"),t.innerHTML="<p>Sorry, I couldn't get a response. Please try again.</p>"}finally{n.disabled=!1}}},login:()=>{const e=document.getElementById("login-form");e.onsubmit=async t=>{t.preventDefault();const o=new FormData(e),n=Object.fromEntries(o.entries());try{const s=await apiRequest("/login","POST",n,!0);state.token=s.token,state.userId=s.userId,state.role=s.role,localStorage.setItem("authToken",s.token),localStorage.setItem("userId",s.userId),localStorage.setItem("userRole",s.role),window.location.hash="#dashboard",router(),showToast("Login successful!","success")}catch(a){console.error("Login failed:",a)}}},signup:()=>{const e=document.getElementById("signup-form");e.onsubmit=async t=>{t.preventDefault();const o=new FormData(e),n=Object.fromEntries(o.entries());try{await apiRequest("/signup","POST",n,!0),showToast("Account created successfully! Please log in.","success"),window.location.hash="#login",router()}catch(s){console.error("Signup failed:",s)}}},dashboard:()=>{const e=document.getElementById("ai-course-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to generate a course."),void(window.location.hash="#login");const o=document.getElementById("ai-course-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-course-query").value;n.disabled=!0,n.textContent="Generating...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';try{const a=await apiRequest("/generate-course-with-ai","POST",{query:s});state.currentCourse=a,renderCourseCard(a,o,!0)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="✨ Generate Course"}}},"career-path":()=>{const e=document.getElementById("ai-path-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to visualize a career path."),void(window.location.hash="#login");const o=document.getElementById("ai-path-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-path-query").value;n.disabled=!0,n.textContent="Visualizing...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Mapping your career path...</p></div>';try{const a=await apiRequest("/generate-career-path","POST",{query:s});renderCareerPath(a,o)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="🔮 Visualize Path"}}},"saved-courses":async()=>{const e=document.getElementById("saved-courses-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/saved-courses");state.savedCourses=t,renderSavedCourses()}catch(o){e.innerHTML="<p>Could not load saved courses.</p>"}},profile:async()=>{const e=document.getElementById("profile-form");try{const t=await apiRequest("/profile");document.getElementById("profile-fullName").value=t.full_name,document.getElementById("profile-email").value=t.email}catch(o){showToast("Could not load profile data.")}e.onsubmit=async e=>{e.preventDefault();const t=document.getElementById("profile-fullName").value,o=document.getElementById("profile-email").value;try{await apiRequest("/profile","PUT",{fullName:t,email:o}),showToast("Profile updated successfully!","success")}catch(n){console.error("Profile update failed:",n)}}},admin:async()=>{if("admin"!==state.role)return void(window.location.hash="#dashboard");const e=document.getElementById("admin-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/users");renderAdminTable(t)}catch(o){e.innerHTML="<p>Could not load user data.</p>"}},"course-details":()=>{const e=document.getElementById("course-details-content");state.currentCourse?(renderCourseCard(state.currentCourse,e,!1),console.log("Rendering course details for:",state.currentCourse)):e.innerHTML="<p>No course selected. Please go back and select a course.</p>"}};
+        const viewInitializers={
+            landing:()=>{const e=document.getElementById("chatbot-form"),t=document.getElementById("chatbot-response");t.style.display="none",e.onsubmit=async o=>{if(o.preventDefault(),!state.token)return showToast("Please log in to use the chatbot."),void(window.location.hash="#login");const n=e.querySelector('button[type="submit"]'),s=document.getElementById("chatbot-query").value;n.disabled=!0,t.style.display="flex",t.classList.add("loading"),t.innerHTML='<div class="spinner"></div>';try{const a=await apiRequest("/chatbot","POST",{query:s});t.classList.remove("loading"),t.innerHTML=a.response}catch(i){t.classList.remove("loading"),t.innerHTML="<p>Sorry, I couldn't get a response. Please try again.</p>"}finally{n.disabled=!1}}},
+            login: () => {
+                const loginForm = document.getElementById('login-form');
+                const passwordInput = document.getElementById('login-password');
+                const showPasswordCheckbox = document.getElementById('login-show-password');
+
+                showPasswordCheckbox.addEventListener('change', () => {
+                    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+                });
+
+                loginForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(loginForm);
+                    const data = Object.fromEntries(formData.entries());
+                    try {
+                        const response = await apiRequest("/login", "POST", data, true);
+                        state.token = response.token;
+                        state.userId = response.userId;
+                        state.role = response.role;
+                        localStorage.setItem("authToken", response.token);
+                        localStorage.setItem("userId", response.userId);
+                        localStorage.setItem("userRole", response.role);
+                        window.location.hash = "#dashboard";
+                        router();
+                        showToast("Login successful!", "success");
+                    } catch (error) {
+                        console.error("Login failed:", error);
+                    }
+                };
+            },
+            signup: () => {
+                const signupForm = document.getElementById('signup-form');
+                const passwordInput = document.getElementById('signup-password');
+                const confirmPasswordInput = document.getElementById('signup-confirm-password');
+                const showPasswordCheckbox = document.getElementById('signup-show-password');
+
+                showPasswordCheckbox.addEventListener('change', () => {
+                    const isChecked = showPasswordCheckbox.checked;
+                    passwordInput.type = isChecked ? 'text' : 'password';
+                    confirmPasswordInput.type = isChecked ? 'text' : 'password';
+                });
+
+                signupForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(signupForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    if (data.password !== data.confirmPassword) {
+                        showToast("Passwords do not match.");
+                        return;
+                    }
+
+                    try {
+                        await apiRequest("/signup", "POST", data, true);
+                        showToast("Account created successfully! Please log in.", "success");
+                        window.location.hash = "#login";
+                        router();
+                    } catch (error) {
+                        console.error("Signup failed:", error);
+                    }
+                };
+            },
+            dashboard:()=>{const e=document.getElementById("ai-course-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to generate a course."),void(window.location.hash="#login");const o=document.getElementById("ai-course-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-course-query").value;n.disabled=!0,n.textContent="Generating...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';try{const a=await apiRequest("/generate-course-with-ai","POST",{query:s});state.currentCourse=a,renderCourseCard(a,o,!0)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="✨ Generate Course"}}},
+            "career-path":()=>{const e=document.getElementById("ai-path-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to visualize a career path."),void(window.location.hash="#login");const o=document.getElementById("ai-path-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-path-query").value;n.disabled=!0,n.textContent="Visualizing...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Mapping your career path...</p></div>';try{const a=await apiRequest("/generate-career-path","POST",{query:s});renderCareerPath(a,o)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="🔮 Visualize Path"}}},
+            "saved-courses":async()=>{const e=document.getElementById("saved-courses-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/saved-courses");state.savedCourses=t,renderSavedCourses()}catch(o){e.innerHTML="<p>Could not load saved courses.</p>"}},
+            profile:async()=>{const e=document.getElementById("profile-form");try{const t=await apiRequest("/profile");document.getElementById("profile-fullName").value=t.full_name,document.getElementById("profile-email").value=t.email}catch(o){showToast("Could not load profile data.")}e.onsubmit=async e=>{e.preventDefault();const t=document.getElementById("profile-fullName").value,o=document.getElementById("profile-email").value;try{await apiRequest("/profile","PUT",{fullName:t,email:o}),showToast("Profile updated successfully!","success")}catch(n){console.error("Profile update failed:",n)}}},
+            admin:async()=>{if("admin"!==state.role)return void(window.location.hash="#dashboard");const e=document.getElementById("admin-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/users");renderAdminTable(t)}catch(o){e.innerHTML="<p>Could not load user data.</p>"}},
+            "course-details":()=>{const e=document.getElementById("course-details-content");state.currentCourse?(renderCourseCard(state.currentCourse,e,!1),console.log("Rendering course details for:",state.currentCourse)):e.innerHTML="<p>No course selected. Please go back and select a course.</p>"}
+        };
         const renderCourseCard=(e,t,o)=>{const n="string"==typeof e.course_data?JSON.parse(e.course_data):e;let s="";o&&(s+=`<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem;">💾 Save This Course</button>`),s+=`<button class="btn btn-secondary" onclick='navigateToCourseDetails(${JSON.stringify(e)})' style="margin-top: 2rem; margin-left: 1rem;">View Details</button>`,t.innerHTML=`<div class="course-card">\n                <div class="course-header"><h3>${n.title}</h3><p>${n.description}</p></div>\n                <div class="course-stats">\n                    <div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${n.startingSalary}</span></div>\n                    <div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${n.duration}</span></div>\n                    <div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${n.difficulty}</span></div>\n                </div>\n                <div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${n.skills.map(e=>`<li class="skill-tag" onclick="navigateToCourseSearch('${e}')" style="cursor: pointer;">${e}</li>`).join("")}</ul></div>\n                <div class="modules-section"><h4>Course Modules</h4><div class="module-list">${n.modules.map(e=>`<div class="module-item" onclick='navigateToCourseSearch(${JSON.stringify(e)})' style="cursor: pointer;"><h5>${e.title}</h5><p>${e.description}</p></div>`).join("")}</div></div>\n                <div style="display: flex;">${s}</div>\n            </div>`,o&&(document.getElementById("save-course-btn").onclick=async()=>{try{await apiRequest("/saved-courses","POST",{courseData:state.currentCourse}),showToast("Course saved successfully!","success")}catch(e){console.error("Failed to save course:",e)}})};
         const renderCareerPath=(e,t)=>{const o={"Entry Level":[],"Mid Career":[],"Late Career":[]};e.flowchart&&e.flowchart.roles&&e.flowchart.roles.forEach(e=>{o[e.stage]&&o[e.stage].push(e)}),t.innerHTML=`<div class="career-path-container">\n                <div class="path-header"><h2>${e.title}</h2><p>${e.description}</p></div>\n                <div class="career-stages">${Object.entries(o).map(([e,t])=>`\n                    <div class="career-stage ${e.split(" ")[0].toLowerCase()}">\n                        <div class="stage-header"><h3>${e}</h3></div>\n                        ${t.map(e=>`\n                            <div class="role-card" onclick="navigateToCourseSearch('${e.title}')" style="cursor: pointer;">\n                                <div class="role-title">${e.title}</div>\n                                <div class="role-salary">${e.salary}</div>\n                            </div>`).join("")}\n                    </div>`).join("")}\n                </div>\n            </div>`};
         const renderSavedCourses=()=>{const e=document.getElementById("saved-courses-content");if(0===state.savedCourses.length)return void(e.innerHTML='<div class="content-box" style="text-align: center;"><p>You have no saved courses yet.</p></div>');e.innerHTML=`\n                <div class="saved-layout">\n                    <div class="saved-sidebar">\n                        <h3>My Courses</h3>\n                        <div class="saved-list" id="saved-list"></div>\n                    </div>\n                    <div class="saved-display" id="saved-display"></div>\n                </div>\n            `;const t=document.getElementById("saved-list");state.savedCourses.forEach((e,o)=>{const n=document.createElement("button");n.className="saved-item",n.textContent=e.course_title,n.dataset.index=o,n.onclick=()=>{document.querySelectorAll(".saved-item").forEach(e=>e.classList.remove("active")),n.classList.add("active"),renderCourseCard(e,document.getElementById("saved-display"),!1)},t.appendChild(n)}),state.savedCourses.length>0&&t.children[0].click()};
