@@ -110,53 +110,42 @@ def authenticate_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def generate_ai_content(prompt=None, model=AI_MODEL, is_json_response=True, messages=None):
+def generate_ai_content(messages, is_json_response=False):
     try:
-        if messages is None:
-            if prompt is None:
-                raise ValueError("Either prompt or messages must be provided.")
-            messages = [{"role": "user", "content": prompt}]
-
+        payload = {
+            "model": AI_MODEL,
+            "messages": messages
+        }
         if is_json_response:
-            if not any(d.get('role') == 'system' for d in messages):
-                messages.insert(0, {"role": "system", "content": "You are an expert content creator who only responds in valid JSON format."})
-        
+            payload["response_format"] = {"type": "json_object"}
+
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            data=json.dumps({ "model": model, "messages": messages })
+            headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"},
+            json=payload
         )
-        
         response.raise_for_status()
         
         response_data = response.json()
         response_text = response_data['choices'][0]['message']['content']
         
         if is_json_response:
-            cleaned_text = re.sub(
-                r'^```json\s*|\s*```\s*$', 
-                '', 
-                response_text, 
-                flags=re.MULTILINE | re.DOTALL
-            ).strip()
-            data = json.loads(cleaned_text)
-            return data, None
+            match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if not match:
+                raise json.JSONDecodeError("No valid JSON object found in the AI response.", response_text, 0)
+            return json.loads(match.group(0)), None
         
         return response_text, None
 
     except requests.exceptions.HTTPError as e:
-        print(f"HTTP Error: {e}")
-        return None, ({"error": f"API request failed with status code {e.response.status_code}"}, e.response.status_code)
+        print(f"HTTP Error: {e.response.text}")
+        return None, ({"error": f"API request failed: {e.response.reason}"}, e.response.status_code)
     except json.JSONDecodeError as e:
-        print(f"JSON Decode Error: {e}")
-        print(f"Response text: {response_text if 'response_text' in locals() else 'No response'}")
-        return None, ({"error": "The AI returned an unexpected format. Please try again."}, 500)
+        print(f"JSON Decode Error: {e.msg} - Response: {e.doc}")
+        return None, ({"error": "The AI returned an invalid format. Please try again."}, 500)
     except Exception as e:
-        print(f"AI Error: {str(e)}")
-        return None, ({"error": f"AI communication error: {str(e)}"}, 500)
+        print(f"An unexpected AI error occurred: {str(e)}")
+        return None, ({"error": f"An AI communication error occurred."}, 500)
 
 @app.route('/health')
 def health_check():
@@ -165,38 +154,27 @@ def health_check():
 @app.route('/api/signup', methods=['POST'])
 @sqldb
 def signup(c):
+    data = request.get_json()
+    if not data: return jsonify({"error": "No data provided."}), 400
+    
+    full_name = data.get('fullName')
+    email = data.get('email')
+    password = data.get('password')
+    confirm_password = data.get('confirmPassword')
+
+    if not all([full_name, email, password, confirm_password]):
+        return jsonify({"error": "All fields are required."}), 400
+    if password != confirm_password:
+        return jsonify({"error": "Passwords do not match."}), 400
+    if '@' not in email or '.' not in email:
+        return jsonify({"error": "Invalid email format."}), 400
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters."}), 400
+
     try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({"error": "No data provided."}), 400
-        
-        full_name = data.get('fullName')
-        email = data.get('email')
-        password = data.get('password')
-        confirm_password = data.get('confirmPassword')
-
-        if not all([full_name, email, password, confirm_password]):
-            return jsonify({"error": "Missing required fields."}), 400
-
-        if password != confirm_password:
-            return jsonify({"error": "Passwords do not match."}), 400
-
-        if '@' not in email or '.' not in email:
-            return jsonify({"error": "Invalid email format."}), 400
-
-        if len(password) < 6:
-            return jsonify({"error": "Password must be at least 6 characters."}), 400
-
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-        c.execute(
-            "INSERT INTO users(full_name, email, password) VALUES(?, ?, ?)", 
-            (full_name, email, hashed_password)
-        )
-        
+        c.execute("INSERT INTO users(full_name, email, password) VALUES(?, ?, ?)", (full_name, email, hashed_password))
         return jsonify({"message": "Account created successfully!"}), 201
-        
     except sq.IntegrityError:
         return jsonify({"error": "A user with this email already exists."}), 409
     except Exception as e:
@@ -206,39 +184,24 @@ def signup(c):
 @app.route('/api/login', methods=['POST'])
 @sqldb
 def login(c):
+    data = request.get_json()
+    if not data: return jsonify({"error": "No data provided."}), 400
+    
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required."}), 400
+
     try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({"error": "No data provided."}), 400
-        
-        email = data.get('email')
-        password = data.get('password')
-
-        if not email or not password:
-            return jsonify({"error": "Email and password are required."}), 400
-
         c.execute("SELECT * FROM users WHERE email = ?", (email,))
         user = c.fetchone()
-
         if user and bcrypt.check_password_hash(user['password'], password):
-            payload = {
-                'userId': user['id'],
-                'email': user['email'],
-                'role': user['role'],
-                'exp': datetime.utcnow() + timedelta(days=7)
-            }
+            payload = {'userId': user['id'], 'email': user['email'], 'role': user['role'], 'exp': datetime.utcnow() + timedelta(days=7)}
             token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
-            
-            return jsonify({
-                "message": "Login successful!",
-                "token": token,
-                "userId": user['id'],
-                "role": user['role']
-            }), 200
+            return jsonify({"message": "Login successful!", "token": token, "userId": user['id'], "role": user['role']}), 200
         else:
             return jsonify({"error": "Invalid email or password."}), 401
-            
     except Exception as e:
         print(f"Login Error: {str(e)}")
         return jsonify({"error": "An error occurred during login."}), 500
@@ -248,56 +211,23 @@ def login(c):
 @sqldb
 def profile(c):
     user_id = g.user['userId']
-    
     if request.method == 'GET':
-        try:
-            c.execute(
-                "SELECT id, full_name, email, created_at, role FROM users WHERE id = ?", 
-                (user_id,)
-            )
-            user = c.fetchone()
-            
-            if user:
-                return jsonify(dict(user)), 200
-            else:
-                return jsonify({"error": "User not found."}), 404
-                
-        except Exception as e:
-            print(f"Profile GET Error: {str(e)}")
-            return jsonify({"error": "Could not fetch profile."}), 500
-
+        c.execute("SELECT id, full_name, email, created_at, role FROM users WHERE id = ?", (user_id,))
+        user = c.fetchone()
+        return jsonify(dict(user)) if user else (jsonify({"error": "User not found."}), 404)
+    
     if request.method == 'PUT':
+        data = request.get_json()
+        if not data: return jsonify({"error": "No data provided."}), 400
+        full_name, email = data.get('fullName'), data.get('email')
+        if not all([full_name, email]): return jsonify({"error": "Full name and email are required."}), 400
+        if '@' not in email or '.' not in email: return jsonify({"error": "Invalid email format."}), 400
+
         try:
-            data = request.get_json()
-            
-            if not data:
-                return jsonify({"error": "No data provided."}), 400
-            
-            full_name = data.get('fullName')
-            email = data.get('email')
-
-            if not all([full_name, email]):
-                return jsonify({"error": "Full name and email are required."}), 400
-
-            if '@' not in email or '.' not in email:
-                return jsonify({"error": "Invalid email format."}), 400
-
-            c.execute(
-                "UPDATE users SET full_name = ?, email = ? WHERE id = ?", 
-                (full_name, email, user_id)
-            )
-            
-            c.execute(
-                "SELECT id, full_name, email FROM users WHERE id = ?", 
-                (user_id,)
-            )
+            c.execute("UPDATE users SET full_name = ?, email = ? WHERE id = ?", (full_name, email, user_id))
+            c.execute("SELECT id, full_name, email FROM users WHERE id = ?", (user_id,))
             updated_user = c.fetchone()
-            
-            return jsonify({
-                "message": "Profile updated successfully!",
-                "user": dict(updated_user)
-            }), 200
-            
+            return jsonify({"message": "Profile updated successfully!", "user": dict(updated_user)}), 200
         except sq.IntegrityError:
             return jsonify({"error": "This email is already taken by another user."}), 409
         except Exception as e:
@@ -309,45 +239,20 @@ def profile(c):
 @sqldb
 def saved_courses(c):
     user_id = g.user['userId']
-    
     if request.method == 'GET':
-        try:
-            c.execute(
-                """SELECT id, course_title, course_data, saved_at 
-                   FROM saved_courses 
-                   WHERE user_id = ? 
-                   ORDER BY saved_at DESC""", 
-                (user_id,)
-            )
-            courses = [dict(course) for course in c.fetchall()]
-            return jsonify(courses), 200
-            
-        except Exception as e:
-            print(f"Saved Courses GET Error: {str(e)}")
-            return jsonify({"error": "Could not fetch saved courses."}), 500
-
+        c.execute("SELECT id, course_title, course_data, saved_at FROM saved_courses WHERE user_id = ? ORDER BY saved_at DESC", (user_id,))
+        courses = [dict(course) for course in c.fetchall()]
+        return jsonify(courses), 200
+    
     if request.method == 'POST':
+        data = request.get_json()
+        if not data: return jsonify({"error": "No data provided."}), 400
+        course_data = data.get('courseData')
+        if not course_data or 'title' not in course_data: return jsonify({"error": "Valid course data is required."}), 400
+        
         try:
-            data = request.get_json()
-            
-            if not data:
-                return jsonify({"error": "No data provided."}), 400
-            
-            course_data = data.get('courseData')
-            
-            if not course_data or 'title' not in course_data:
-                return jsonify({"error": "Valid course data is required."}), 400
-
-            course_title = course_data['title']
-            course_data_str = json.dumps(course_data)
-
-            c.execute(
-                "INSERT INTO saved_courses(user_id, course_title, course_data) VALUES(?, ?, ?)",
-                (user_id, course_title, course_data_str)
-            )
-            
+            c.execute("INSERT INTO saved_courses(user_id, course_title, course_data) VALUES(?, ?, ?)",(user_id, course_data['title'], json.dumps(course_data)))
             return jsonify({"message": "Course saved successfully!"}), 201
-            
         except Exception as e:
             print(f"Saved Courses POST Error: {str(e)}")
             return jsonify({"error": "Could not save course."}), 500
@@ -357,218 +262,104 @@ def saved_courses(c):
 @sqldb
 def delete_saved_course(c, course_id):
     user_id = g.user['userId']
+    c.execute("SELECT id FROM saved_courses WHERE id = ? AND user_id = ?", (course_id, user_id))
+    if not c.fetchone(): return jsonify({"error": "Course not found or unauthorized."}), 404
     
-    try:
-        c.execute(
-            "SELECT id FROM saved_courses WHERE id = ? AND user_id = ?",
-            (course_id, user_id)
-        )
-        course = c.fetchone()
-        
-        if not course:
-            return jsonify({"error": "Course not found or unauthorized."}), 404
-        
-        c.execute("DELETE FROM saved_courses WHERE id = ?", (course_id,))
-        
-        return jsonify({"message": "Course deleted successfully."}), 200
-        
-    except Exception as e:
-        print(f"Delete Course Error: {str(e)}")
-        return jsonify({"error": "Could not delete course."}), 500
+    c.execute("DELETE FROM saved_courses WHERE id = ?", (course_id,))
+    return jsonify({"message": "Course deleted successfully."}), 200
 
 @app.route('/api/generate-course-with-ai', methods=['POST'])
 @authenticate_token
 def generate_course():
-    try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({"error": "No data provided."}), 400
-        
-        user_query = data.get('query')
-        
-        if not user_query:
-            return jsonify({"error": "A query is required to generate a course."}), 400
+    data = request.get_json()
+    if not data or not data.get('query'): return jsonify({"error": "A query is required."}), 400
+    user_query = data.get('query')
 
-        prompt = f"""
-You are an expert course creator. A user wants to learn about: "{user_query}".
-
-Generate a detailed course outline as a clean JSON object without any markdown formatting or explanations.
-The JSON object must strictly follow this structure:
-{{
-  "title": "Course Title",
-  "description": "A concise and engaging course description (2-3 sentences).",
-  "duration": "Estimated duration (e.g., '6 Weeks', '3 Months')",
-  "difficulty": "Beginner, Intermediate, or Advanced",
-  "startingSalary": "A realistic starting salary in Indian Rupees (INR) (e.g., '₹5L - ₹8L / yr')",
-  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5"],
-  "modules": [
-    {{ "title": "Module 1: Introduction", "description": "Brief overview of the module." }},
-    {{ "title": "Module 2: Core Concepts", "description": "Details about core concepts." }},
-    {{ "title": "Module 3: Advanced Topics", "description": "Exploring advanced topics." }},
-    {{ "title": "Module 4: Practical Application", "description": "Hands-on projects and case studies." }}
-  ]
-}}
-
-Important:
-- Return ONLY valid JSON, no extra text.
-- The 'startingSalary' MUST be in Indian Rupees (INR) and formatted like '₹5L - ₹8L / yr'.
-- Include 4-6 modules.
-- Include 5-7 relevant skills.
-- Make the description engaging and practical for the Indian job market.
-"""
-
-        course_data, error = generate_ai_content(prompt)
-        
-        if error:
-            return jsonify(error[0]), error[1]
-        
-        return jsonify(course_data), 200
-        
-    except Exception as e:
-        print(f"Generate Course Error: {str(e)}")
-        return jsonify({"error": "Could not generate course."}), 500
+    prompt = f"""
+        You are an expert course creator who ONLY responds in valid JSON.
+        A user wants a course about: "{user_query}".
+        Create a course outline with the following JSON structure:
+        {{
+        "title": "Course Title", "description": "Engaging 2-3 sentence description.",
+        "duration": "e.g., '6 Weeks'", "difficulty": "Beginner, Intermediate, or Advanced",
+        "startingSalary": "Realistic starting salary in INR (e.g., '₹5L - ₹8L / yr')",
+        "skills": ["5-7 relevant skills"],
+        "modules": [ {{"title": "Module 1", "description": "Brief overview."}}, {{"title": "Module 2", "description": "Core concepts."}}, {{"title": "Module 3", "description": "Advanced topics."}}, {{"title": "Module 4", "description": "Practical application."}} ]
+        }}
+    """
+    messages = [{"role": "system", "content": "You are a course creation expert that only outputs JSON."}, {"role": "user", "content": prompt}]
+    course_data, error = generate_ai_content(messages=messages, is_json_response=True)
+    return jsonify(error[0] if error else course_data), error[1] if error else 200
 
 @app.route('/api/generate-career-path', methods=['POST'])
 @authenticate_token
 def generate_career_path():
-    try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({"error": "No data provided."}), 400
-        
-        user_query = data.get('query')
-        
-        if not user_query:
-            return jsonify({"error": "A query is required to generate a career path."}), 400
+    data = request.get_json()
+    if not data or not data.get('query'): return jsonify({"error": "A query is required."}), 400
+    user_query = data.get('query')
 
-        prompt = f"""
-You are an expert career path creator for the Indian job market. 
-Generate a visual career progression for: "{user_query}".
-
-The output must be a clean JSON object, without any markdown formatting or explanations.
-The JSON object must have the following structure:
-{{
-  "title": "Career Path Title for {user_query}",
-  "description": "A brief description of this career field (2-3 sentences)",
-  "flowchart": {{
-    "roles": [
-      {{
-        "id": 1,
-        "title": "Job Title",
-        "salary": "₹XL - ₹YL / yr",
-        "stage": "Entry Level"
-      }}
-    ]
-  }}
-}}
-
-Important:
-- Return ONLY valid JSON.
-- Include 8-12 roles total.
-- Distribute roles across three stages: "Entry Level", "Mid Career", "Late Career".
-- Each stage must have 2-4 roles.
-- Use realistic Indian salary ranges in Indian Rupees (Lakhs per year, e.g., '₹8L - ₹12L / yr').
-- Progress from junior to senior positions logically.
-"""
-
-        path_data, error = generate_ai_content(prompt)
-        
-        if error:
-            return jsonify(error[0]), error[1]
-        
-        return jsonify(path_data), 200
-        
-    except Exception as e:
-        print(f"Generate Career Path Error: {str(e)}")
-        return jsonify({"error": "Could not generate career path."}), 500
+    prompt = f"""
+        You are a career path expert for the Indian job market who ONLY responds in valid JSON.
+        Generate a career progression for "{user_query}".
+        The JSON must follow this structure:
+        {{
+        "title": "Career Path for {user_query}", "description": "Brief 2-3 sentence description.",
+        "flowchart": {{"roles": [ {{"id": 1, "title": "Job Title", "salary": "₹XL - ₹YL / yr", "stage": "Entry Level, Mid Career, or Late Career"}} ] }}
+        }}
+        Include 8-12 total roles distributed across the three stages.
+    """
+    messages = [{"role": "system", "content": "You are a career path expert that only outputs JSON."}, {"role": "user", "content": prompt}]
+    path_data, error = generate_ai_content(messages=messages, is_json_response=True)
+    return jsonify(error[0] if error else path_data), error[1] if error else 200
 
 @app.route('/api/chatbot', methods=['POST'])
 @authenticate_token
 def chatbot():
-    try:
-        data = request.get_json()
-        if not data or 'query' not in data:
-            return jsonify({"error": "Query is required."}), 400
-        
-        user_query = data.get('query')
-        history = data.get('history', [])
-        
-        system_prompt = """
-You are Course2Career Assistant, a friendly and helpful AI chatbot designed to interact with students. Your goal is to provide clear, direct answers and guide them to use the website's tools.
+    data = request.get_json()
+    if not data or 'query' not in data: return jsonify({"error": "Query is required."}), 400
+    
+    user_query = data.get('query')
+    history = data.get('history', [])
+    
+    system_prompt = """
+        You are Course2Career Assistant. Your #1 rule is to NEVER mention or suggest external websites like Coursera or Udemy. Your entire focus is on the tools available on THIS website.
 
-**Your Instructions:**
+        **Your Task:**
+        1. Give a direct, concise answer to the user's question.
+        2. If the question is about learning a skill or a career, add this EXACT sentence to the end of your response: "For a detailed plan, use the **Course Search** and **Career Path Visualizer** tools on our site."
+        3. Use simple HTML for formatting: `<p>`, `<strong>`, `<ul>`, `<li>`. Do NOT include `<html>` or `<body>` tags.
 
-1.  **Answer Directly:** First, provide a concise and helpful answer to the student's question. Get straight to the point.
-2.  **Check for Course/Career Query:** Analyze if the user's question is about learning a skill, a specific course, or a career path (e.g., "how to learn python," "what is a data scientist," "course for machine learning").
-3.  **Add Special Message (if applicable):** If the question is about a course or career, ALWAYS add the following message at the very end of your response, on a new line. Replace "[topic]" with the specific skill or career the user asked about.
-    * "For a detailed plan, visit our AI Course Generator and Career Path Visualizer to become a [topic]."
-4.  **Formatting:** Use simple HTML for readability. Use `<p>`, `<strong>`, `<ul>`, and `<li>`. Do NOT include `<html>` or `<body>` tags.
-5.  **Focus:** Do not suggest external websites or platforms like Coursera or Udemy unless the user explicitly asks for them. Your focus is on providing a direct answer and promoting the tools on this website.
+        Remember: Do not mention any other websites.
+    """
+    
+    messages = [{"role": "system", "content": system_prompt}]
+    messages.extend(history)
+    messages.append({"role": "user", "content": user_query})
 
-**Example Interaction:**
-
-* **User asks:** "How do I become a Data Scientist?"
-* **Your response should be:**
-    <p>To become a Data Scientist, you generally need a strong foundation in statistics, programming (like Python or R), and machine learning. Key steps include...</p>
-    <p><em>[...more helpful details...]</em></p>
-    <p>For a detailed plan, visit our AI Course Generator and Career Path Visualizer to become a Data Scientist.</p>
-"""
-        
-        messages = [{"role": "system", "content": system_prompt}]
-        
-        for turn in history:
-            messages.append({"role": turn.get('role'), "content": turn.get('content')})
-
-        messages.append({"role": "user", "content": user_query})
-
-        response_text, error = generate_ai_content(messages=messages, is_json_response=False)
-        
-        if error:
-            return jsonify(error[0]), error[1]
-            
-        return jsonify({"response": response_text}), 200
-
-    except Exception as e:
-        print(f"Chatbot Error: {str(e)}")
-        return jsonify({"error": "An error occurred in the chatbot."}), 500
+    response_text, error = generate_ai_content(messages=messages, is_json_response=False)
+    
+    if error:
+        return jsonify(error[0]), error[1]
+    return jsonify({"response": response_text}), 200
 
 @app.route('/api/users', methods=['GET'])
 @authenticate_admin
 @sqldb
 def get_all_users(c):
-    try:
-        c.execute(
-            """SELECT id, full_name, email, role, created_at 
-               FROM users 
-               ORDER BY created_at DESC"""
-        )
-        users = c.fetchall()
-        return jsonify([dict(user) for user in users]), 200
-        
-    except Exception as e:
-        print(f"Get Users Error: {str(e)}")
-        return jsonify({"error": "Could not fetch users."}), 500
+    c.execute("SELECT id, full_name, email, role, created_at FROM users ORDER BY created_at DESC")
+    users = c.fetchall()
+    return jsonify([dict(user) for user in users]), 200
 
 @app.route('/api/users/<int:user_id>', methods=['DELETE'])
 @authenticate_admin
 @sqldb
 def delete_user(c, user_id):
-    try:
-        if user_id == g.user['userId']:
-            return jsonify({"error": "Admins cannot delete their own account."}), 403
-        
-        c.execute("DELETE FROM users WHERE id = ?", (user_id,))
-        
-        if c.rowcount == 0:
-            return jsonify({"error": "User not found."}), 404
-        
-        return jsonify({"message": "User and all their data deleted successfully."}), 200
-        
-    except Exception as e:
-        print(f"Delete User Error: {str(e)}")
-        return jsonify({"error": "Could not delete user."}), 500
+    if user_id == g.user['userId']: return jsonify({"error": "Admins cannot delete their own account."}), 403
+    
+    c.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    if c.rowcount == 0: return jsonify({"error": "User not found."}), 404
+    
+    return jsonify({"message": "User and all their data deleted successfully."}), 200
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -578,7 +369,5 @@ def catch_all(path):
 if __name__ == '__main__':
     with app.app_context():
         init_db()
-    
     port = int(os.environ.get('PORT', 5000))
-    
     app.run(host='0.0.0.0', port=port, debug=False)
