@@ -277,14 +277,32 @@ def generate_course():
 
     prompt = f"""
         You are an expert course creator who ONLY responds in valid JSON.
-        A user wants a course about: "{user_query}".
-        Create a course outline with the following JSON structure:
+        A user wants a detailed course about: "{user_query}".
+        Create a comprehensive course outline with the following JSON structure. Each module must contain 8 chapters, and each chapter must contain 6 pages. The 'content' for each page should be a detailed, educational paragraph.
+
         {{
         "title": "Course Title", "description": "Engaging 2-3 sentence description.",
-        "duration": "e.g., '6 Weeks'", "difficulty": "Beginner, Intermediate, or Advanced",
-        "startingSalary": "Realistic starting salary in INR (e.g., '₹5L - ₹8L / yr')",
+        "duration": "e.g., '8 Weeks'", "difficulty": "Beginner, Intermediate, or Advanced",
+        "startingSalary": "Realistic starting salary in INR (e.g., '₹4L - ₹6L / yr')",
         "skills": ["5-7 relevant skills"],
-        "modules": [ {{"title": "Module 1", "description": "Brief overview."}}, {{"title": "Module 2", "description": "Core concepts."}}, {{"title": "Module 3", "description": "Advanced topics."}}, {{"title": "Module 4", "description": "Practical application."}} ]
+        "modules": [
+            {{
+            "title": "Module 1: [Module Title]", "description": "Brief overview of the module.",
+            "chapters": [
+                {{
+                "title": "Chapter 1.1: [Chapter Title]",
+                "pages": [
+                    {{"title": "Page 1: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 2: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 3: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 4: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 5: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}},
+                    {{"title": "Page 6: [Page Title]", "content": "Detailed, paragraph-form educational content for this page."}}
+                ]
+                }}
+              ]
+            }}
+          ]
         }}
     """
     messages = [{"role": "system", "content": "You are a course creation expert that only outputs JSON."}, {"role": "user", "content": prompt}]
