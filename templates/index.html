@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course2Career</title>
+    <title> Course2Career </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -100,8 +100,8 @@
         .show-password-container label { margin-bottom: 0; font-weight: 500; font-size: 0.875rem; color: var(--text-secondary); }
         .content-section { padding: 4rem 1.5rem; }
         .content-box { background: white; border-radius: var(--radius-xl); padding: 2.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-md); }
-        #view-dashboard .content-box { background: linear-gradient(135deg, #f0fdf4, #eef2ff); }
-        #view-dashboard .content-box h1, #view-career-path .content-box h1 { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #view-course-search .content-box { background: linear-gradient(135deg, #f0fdf4, #eef2ff); }
+        #view-course-search .content-box h1, #view-career-path .content-box h1 { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .content-box > p { color: var(--text-secondary); margin-bottom: 2rem; }
         .ai-form { display: flex; gap: 1rem; margin-top: 2rem; }
         .ai-form input { flex: 1; padding: 1rem 1.25rem; border: 2px solid var(--border); border-radius: var(--radius-lg); font-size: 1rem; transition: all 0.2s ease; background: white; }
@@ -316,7 +316,7 @@
                                 <div class="step-pre-title">Where do I go next?</div>
                                 <h3>Learn new skills</h3>
                                 <p>Once you've decided on a career path, it's time to join our community! Enroll in one of our online self-paced courses to begin learning, with access to affordable support from coaches working in the industry.</p>
-                                <a href="#dashboard" class="step-button">Explore Courses →</a>
+                                <a href="#course-search" class="step-button">Explore Courses →</a>
                             </div>
                             <div class="step-illustration">
                                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80" alt="Student searching and learning on a laptop" loading="lazy">
@@ -403,11 +403,11 @@
                 </div>
             </div>
         </section>
-        <section id="view-dashboard" class="view-section">
+        <section id="view-course-search" class="view-section">
             <div class="content-section">
                 <div class="container">
                     <div class="content-box">
-                        <h1>🚀 Course Generator</h1>
+                        <h1>🚀 Course Search</h1>
                         <p>Describe any skill or career goal, and our AI will craft the perfect learning path for you in seconds.</p>
                         <form id="ai-course-form" class="ai-form">
                             <input type="text" id="ai-course-query" placeholder="e.g., 'Become a product manager' or 'Learn web development'" required>
@@ -491,14 +491,14 @@
     </footer>
     <script>
         const state={token:localStorage.getItem("authToken"),userId:localStorage.getItem("userId"),role:localStorage.getItem("userRole"),savedCourses:[],currentCourse:null};
-        const navigateToCourseSearch=e=>{const t=document.getElementById("ai-course-query");t&&(t.value="string"==typeof e?e:e.title),window.location.hash="#dashboard"};
+        const navigateToCourseSearch=e=>{const t=document.getElementById("ai-course-query");t&&(t.value="string"==typeof e?e:e.title),window.location.hash="#course-search"};
         const navigateToCourseDetails=e=>{state.currentCourse=e,window.location.hash="#course-details"};
         const showToast=(e,t="error")=>{const o=document.getElementById("toast-container"),n=document.createElement("div");n.className=`toast ${t}`,n.textContent=e,o.appendChild(n),setTimeout(()=>{n.style.animation="slideOutRight 0.5s ease forwards",setTimeout(()=>n.remove(),500)},4e3)};
         const showModal=(e,t,o)=>{const n=document.getElementById("modal"),s=document.getElementById("modal-confirm"),a=document.getElementById("modal-cancel");document.getElementById("modal-title").textContent=e,document.getElementById("modal-message").textContent=t;const i=()=>{o(),l()};a.addEventListener("click",()=>{l()});const l=()=>{n.classList.remove("active"),s.removeEventListener("click",i),a.removeEventListener("click",l)};s.addEventListener("click",i),n.classList.add("active")};
         const apiRequest=async(e,t="GET",o=null,n=!1)=>{const s={"Content-Type":"application/json"};state.token&&!n&&(s.Authorization=`Bearer ${state.token}`);try{const a=await fetch(`/api${e}`,{method:t,headers:s,body:o?JSON.stringify(o):null});if(204===a.status)return null;const i=await a.json();if(!a.ok)throw new Error(i.error||`HTTP error! status: ${a.status}`);return i}catch(l){return console.error("API Request Error:",l),showToast(l.message||"An unexpected error occurred."),Promise.reject(l)}};
-        const updateNav=()=>{const e=document.getElementById("nav-links");state.token?(e.innerHTML=`\n                    <a href="#dashboard">Dashboard</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#saved-courses">Saved</a>\n                    <a href="#profile">Profile</a>\n                    ${"admin"===state.role?'<a href="#admin">Admin</a>':""}\n                    <a href="#" id="logout-btn" class="btn-primary">Logout</a>\n                `,document.getElementById("logout-btn").addEventListener("click",e=>{e.preventDefault(),logout()})):e.innerHTML='\n                    <a href="#dashboard">Dashboard</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#login">Sign In</a>\n                    <a href="#signup" class="btn-primary">Sign Up</a>\n                '};
+        const updateNav=()=>{const e=document.getElementById("nav-links");state.token?(e.innerHTML=`\n                    <a href="#course-search">Course Search</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#saved-courses">Saved</a>\n                    <a href="#profile">Profile</a>\n                    ${"admin"===state.role?'<a href="#admin">Admin</a>':""}\n                    <a href="#" id="logout-btn" class="btn-primary">Logout</a>\n                `,document.getElementById("logout-btn").addEventListener("click",e=>{e.preventDefault(),logout()})):e.innerHTML='\n                    <a href="#course-search">Course Search</a>\n                    <a href="#career-path">Career Paths</a>\n                    <a href="#login">Sign In</a>\n                    <a href="#signup" class="btn-primary">Sign Up</a>\n                '};
         const logout=()=>{localStorage.removeItem("authToken"),localStorage.removeItem("userId"),localStorage.removeItem("userRole"),state.token=null,state.userId=null,state.role=null,window.location.hash="#landing",router(),showToast("You have been logged out.","success")};
-        const router=()=>{const e=window.location.hash.slice(1)||"landing",t=["login","signup"],o=["profile","saved-courses","admin","course-details"];if(state.token&&t.includes(e))return void(window.location.hash="#dashboard");if(!state.token&&o.includes(e))return showToast("You must be logged in to view this page."),void(window.location.hash="#login");document.querySelectorAll(".view-section").forEach(e=>{e.classList.remove("active")});const n=document.getElementById(`view-${e}`);n?(n.classList.add("active"),document.querySelectorAll(".nav-links a").forEach(t=>{t.classList.remove("active"),t.getAttribute("href")===`#${e}`&&t.classList.add("active")}),viewInitializers[e]&&viewInitializers[e]()):document.getElementById("view-landing").classList.add("active"),updateNav()};
+        const router=()=>{const e=window.location.hash.slice(1)||"landing",t=["login","signup"],o=["profile","saved-courses","admin","course-details"];if(state.token&&t.includes(e))return void(window.location.hash="#course-search");if(!state.token&&o.includes(e))return showToast("You must be logged in to view this page."),void(window.location.hash="#login");document.querySelectorAll(".view-section").forEach(e=>{e.classList.remove("active")});const n=document.getElementById(`view-${e}`);n?(n.classList.add("active"),document.querySelectorAll(".nav-links a").forEach(t=>{t.classList.remove("active"),t.getAttribute("href")===`#${e}`&&t.classList.add("active")}),viewInitializers[e]&&viewInitializers[e]()):document.getElementById("view-landing").classList.add("active"),updateNav()};
         const viewInitializers={
             landing:()=>{const e=document.getElementById("chatbot-form"),t=document.getElementById("chatbot-response");t.style.display="none",e.onsubmit=async o=>{if(o.preventDefault(),!state.token)return showToast("Please log in to use the chatbot."),void(window.location.hash="#login");const n=e.querySelector('button[type="submit"]'),s=document.getElementById("chatbot-query").value;n.disabled=!0,t.style.display="flex",t.classList.add("loading"),t.innerHTML='<div class="spinner"></div>';try{const a=await apiRequest("/chatbot","POST",{query:s});t.classList.remove("loading"),t.innerHTML=a.response}catch(i){t.classList.remove("loading"),t.innerHTML="<p>Sorry, I couldn't get a response. Please try again.</p>"}finally{n.disabled=!1}}},
             login: () => {
@@ -522,7 +522,7 @@
                         localStorage.setItem("authToken", response.token);
                         localStorage.setItem("userId", response.userId);
                         localStorage.setItem("userRole", response.role);
-                        window.location.hash = "#dashboard";
+                        window.location.hash = "#course-search";
                         router();
                         showToast("Login successful!", "success");
                     } catch (error) {
@@ -562,11 +562,11 @@
                     }
                 };
             },
-            dashboard:()=>{const e=document.getElementById("ai-course-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to generate a course."),void(window.location.hash="#login");const o=document.getElementById("ai-course-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-course-query").value;n.disabled=!0,n.textContent="Generating...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';try{const a=await apiRequest("/generate-course-with-ai","POST",{query:s});state.currentCourse=a,renderCourseCard(a,o,!0)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="✨ Generate Course"}}},
+            "course-search":()=>{const e=document.getElementById("ai-course-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to generate a course."),void(window.location.hash="#login");const o=document.getElementById("ai-course-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-course-query").value;n.disabled=!0,n.textContent="Generating...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Creating your personalized course...</p></div>';try{const a=await apiRequest("/generate-course-with-ai","POST",{query:s});state.currentCourse=a,renderCourseCard(a,o,!0)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="✨ Generate Course"}}},
             "career-path":()=>{const e=document.getElementById("ai-path-form");e.onsubmit=async t=>{if(t.preventDefault(),!state.token)return showToast("Please log in to visualize a career path."),void(window.location.hash="#login");const o=document.getElementById("ai-path-result"),n=e.querySelector('button[type="submit"]'),s=document.getElementById("ai-path-query").value;n.disabled=!0,n.textContent="Visualizing...",o.innerHTML='<div class="loading"><div class="spinner"></div><p>Mapping your career path...</p></div>';try{const a=await apiRequest("/generate-career-path","POST",{query:s});renderCareerPath(a,o)}catch(i){o.innerHTML=""}finally{n.disabled=!1,n.textContent="🔮 Visualize Path"}}},
             "saved-courses":async()=>{const e=document.getElementById("saved-courses-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/saved-courses");state.savedCourses=t,renderSavedCourses()}catch(o){e.innerHTML="<p>Could not load saved courses.</p>"}},
             profile:async()=>{const e=document.getElementById("profile-form");try{const t=await apiRequest("/profile");document.getElementById("profile-fullName").value=t.full_name,document.getElementById("profile-email").value=t.email}catch(o){showToast("Could not load profile data.")}e.onsubmit=async e=>{e.preventDefault();const t=document.getElementById("profile-fullName").value,o=document.getElementById("profile-email").value;try{await apiRequest("/profile","PUT",{fullName:t,email:o}),showToast("Profile updated successfully!","success")}catch(n){console.error("Profile update failed:",n)}}},
-            admin:async()=>{if("admin"!==state.role)return void(window.location.hash="#dashboard");const e=document.getElementById("admin-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/users");renderAdminTable(t)}catch(o){e.innerHTML="<p>Could not load user data.</p>"}},
+            admin:async()=>{if("admin"!==state.role)return void(window.location.hash="#course-search");const e=document.getElementById("admin-content");e.innerHTML='<div class="loading"><div class="spinner"></div></div>';try{const t=await apiRequest("/users");renderAdminTable(t)}catch(o){e.innerHTML="<p>Could not load user data.</p>"}},
             "course-details":()=>{const e=document.getElementById("course-details-content");state.currentCourse?(renderCourseCard(state.currentCourse,e,!1),console.log("Rendering course details for:",state.currentCourse)):e.innerHTML="<p>No course selected. Please go back and select a course.</p>"}
         };
         const renderCourseCard=(e,t,o)=>{const n="string"==typeof e.course_data?JSON.parse(e.course_data):e;let s="";o&&(s+=`<button class="btn btn-primary" id="save-course-btn" style="margin-top: 2rem;">💾 Save This Course</button>`),s+=`<button class="btn btn-secondary" onclick='navigateToCourseDetails(${JSON.stringify(e)})' style="margin-top: 2rem; margin-left: 1rem;">View Details</button>`,t.innerHTML=`<div class="course-card">\n                <div class="course-header"><h3>${n.title}</h3><p>${n.description}</p></div>\n                <div class="course-stats">\n                    <div class="stat-item"><span class="stat-label">Salary Range</span><span class="stat-value">${n.startingSalary}</span></div>\n                    <div class="stat-item"><span class="stat-label">Duration</span><span class="stat-value">${n.duration}</span></div>\n                    <div class="stat-item"><span class="stat-label">Difficulty</span><span class="stat-value">${n.difficulty}</span></div>\n                </div>\n                <div class="skills-section"><h4>Skills You'll Learn</h4><ul class="skills-list">${n.skills.map(e=>`<li class="skill-tag" onclick="navigateToCourseSearch('${e}')" style="cursor: pointer;">${e}</li>`).join("")}</ul></div>\n                <div class="modules-section"><h4>Course Modules</h4><div class="module-list">${n.modules.map(e=>`<div class="module-item" onclick='navigateToCourseSearch(${JSON.stringify(e)})' style="cursor: pointer;"><h5>${e.title}</h5><p>${e.description}</p></div>`).join("")}</div></div>\n                <div style="display: flex;">${s}</div>\n            </div>`,o&&(document.getElementById("save-course-btn").onclick=async()=>{try{await apiRequest("/saved-courses","POST",{courseData:state.currentCourse}),showToast("Course saved successfully!","success")}catch(e){console.error("Failed to save course:",e)}})};
