@@ -16,13 +16,13 @@
         .view-section.active { display: block; }
         header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
         header.scrolled { box-shadow: var(--shadow-md); }
-        .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
         /* MODIFIED LOGO SIZE */
         .logo { font-size: 2.65rem; font-weight: 900; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; letter-spacing: -0.5px; }
         /* MODIFIED NAV-LINKS GAP (SPACING) */
-        .nav-links { display: flex; align-items: center; gap: 1rem; }
+        .nav-links { display: flex; align-items: center; gap: 0.5rem; }
         /* MODIFIED NAV-LINKS FONT SIZE */
-        .nav-links a { padding: 0.5rem 0.75rem; border-radius: var(--radius-md); font-weight: 500; font-size: 1.1rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; }
+        .nav-links a { padding: 0.25rem 0.5rem; border-radius: var(--radius-md); font-weight: 500; font-size: 1.1rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; }
         .nav-links a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
         .nav-links a.active { background: var(--primary); color: white; }
         .nav-links .btn-primary { background: var(--primary); color: white; }
@@ -30,12 +30,12 @@
         .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
         .mobile-menu-btn span { display: block; width: 24px; height: 2px; background: var(--text-primary); margin: 5px 0; transition: 0.3s; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
-        .hero { padding: 6rem 1.5rem; text-align: center; background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%); }
-        .hero-container { display: flex; align-items: center; justify-content: center; gap: 2rem; text-align: left; }
+        .hero { padding: 4rem 1.5rem; text-align: center; background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%); }
+        .hero-container { display: flex; align-items: center; justify-content: center; gap: 1rem; text-align: left; }
         .hero-content { flex-basis: 55%; }
         .hero h1 { font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .hero p { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--text-secondary); max-width: 600px; margin-bottom: 2rem; }
-        .hero-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-start; }
+        .hero-buttons { display: flex; gap: 0.25rem; flex-wrap: wrap; justify-content: flex-start; }
         .hero-image { flex-basis: 45%; max-width: 450px; }
         .hero-image img { width: 100%; height: auto; border-radius: var(--radius-xl); box-shadow: var(--shadow-2xl); }
         .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; border-radius: var(--radius-lg); font-weight: 600; font-size: 1rem; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
@@ -44,7 +44,7 @@
         .btn-secondary { background: white; color: var(--text-primary); border: 2px solid var(--border); }
         .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        .features { padding: 5rem 1.5rem; }
+        .features { padding: 3rem 1.5rem; }
         .section-header { text-align: center; margin-bottom: 4rem; }
         .section-header h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; }
         .section-header p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
@@ -58,7 +58,7 @@
         .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; }
         .feature-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; }
         .feature-card p { color: var(--text-secondary); line-height: 1.7; }
-        .chatbot-section { padding: 6rem 1.5rem; background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark)); }
+        .chatbot-section { padding: 4rem 1.5rem; background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark)); }
         .chatbot-container { max-width: 800px; margin: 0 auto; background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); display: flex; flex-direction: column; height: 70vh; }
         .chatbot-header { text-align: center; padding: 1.5rem; border-bottom: 1px solid var(--border); }
         .chatbot-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
@@ -90,8 +90,8 @@
         .how-it-works-section { padding: 5rem 1.5rem; text-align: center; }
         .how-it-works-section h2 { font-size: clamp(2.8rem, 5vw, 3.8rem); font-weight: 900; margin-bottom: 1rem; }
         .how-it-works-section .subtitle { max-width: 700px; margin: 0 auto 4rem; color: var(--text-secondary); font-size: 1.1rem; }
-        .steps-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 3rem; }
-        .step-row { display: flex; align-items: center; gap: 2rem; text-align: left; }
+        .steps-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+        .step-row { display: flex; align-items: center; gap: 1rem; text-align: left; }
         .step-row:nth-child(even) { flex-direction: row-reverse; }
         .step-content { flex: 1; }
         .step-pre-title { font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
