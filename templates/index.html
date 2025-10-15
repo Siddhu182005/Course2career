@@ -17,9 +17,12 @@
         header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
         header.scrolled { box-shadow: var(--shadow-md); }
         .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-        .logo { font-size: 2.25rem; font-weight: 900; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; letter-spacing: -0.5px; }
-        .nav-links { display: flex; align-items: center; gap: 0.5rem; }
-        .nav-links a { padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; }
+        /* MODIFIED LOGO SIZE */
+        .logo { font-size: 2.65rem; font-weight: 900; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; letter-spacing: -0.5px; }
+        /* MODIFIED NAV-LINKS GAP (SPACING) */
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+        /* MODIFIED NAV-LINKS FONT SIZE */
+        .nav-links a { padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 500; font-size: 1.1rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; }
         .nav-links a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
         .nav-links a.active { background: var(--primary); color: white; }
         .nav-links .btn-primary { background: var(--primary); color: white; }
