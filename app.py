@@ -17,7 +17,7 @@ bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = os.environ.get('JWT_SECRET')
 OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY')
-AI_MODEL = 'nousresearch/deephermes-3-llama-3-8b-preview:free'
+AI_MODEL = 'alibaba/tongyi-deepresearch-30b-a3b:free'
 
 SQLITECLOUD_CONNECTION = os.environ.get("SQLITECLOUD_CONNECTION_STRING")
 
